@@ -1,0 +1,37 @@
+# Discord AI Learning Bot - Requirements
+# Install with: pip install -r requirements.txt
+
+# Discord
+discord.py>=2.3.0
+
+# Google Gemini AI
+google-generativeai>=0.3.0
+
+# Google APIs (Forms, Sheets, Drive)
+google-api-python-client>=2.100.0
+google-auth-httplib2>=0.1.0
+google-auth-oauthlib>=1.1.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# File processing
+PyPDF2>=3.0.0
+python-docx>=1.0.0
+python-pptx>=0.6.21
+pandas>=2.0.0
+openpyxl>=3.1.0
+Pillow>=10.0.0
+
+# HTTP requests
+aiohttp>=3.9.0
+
+# Web Dashboard
+Flask>=3.0.0
+
+# Browser automation (for Classera)
+selenium>=4.15.0
+webdriver-manager>=4.0.0
+
+# Optional but recommended
+colorama>=0.4.6  # Colored terminal output

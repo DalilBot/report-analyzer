@@ -1,0 +1,41 @@
+{
+  "homework": [
+    {
+      "id": "hw_20260209171455783337",
+      "subject": "Lang",
+      "task": "TB pg 264 Q 1,2, 14,15,18 pg 265 Q 31,32",
+      "due_date": "next session",
+      "added_date": "2026-02-09",
+      "completed": false,
+      "reminded": false
+    },
+    {
+      "id": "hw_20260209171455784351",
+      "subject": "Physics",
+      "task": "booklet page 121 till page 124",
+      "due_date": "Tuesday 10/2/2026",
+      "added_date": "2026-02-09",
+      "completed": false,
+      "reminded": false
+    }
+  ],
+  "reminders": [
+    {
+      "id": "rem_20260209171455784880",
+      "type": "deadline",
+      "description": "Due date of criterion B",
+      "date": "Thursday 12th of Feb",
+      "added_date": "2026-02-09",
+      "reminded": false
+    },
+    {
+      "id": "rem_20260209171455785389",
+      "type": "note",
+      "description": "All worksheets for the lesson are available in the seventh week on Classera.",
+      "date": null,
+      "added_date": "2026-02-09",
+      "reminded": false
+    }
+  ],
+  "last_cleanup": "2026-02-09 17:08:16"
+}

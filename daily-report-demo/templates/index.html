@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Report Analyzer</title>
+    <meta name="description" content="AI-powered daily school report analyzer. Upload PDFs and extract homework & reminders automatically.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/css/style.css?v=3">
+</head>
+<body>
+    <!-- ─── Navbar ──────────────────────────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Report Analyzer</span>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-icon" id="themeToggle" title="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="btn-icon" id="settingsBtn" title="Settings">
+                <i class="fas fa-gear"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ─── Main Content ────────────────────────────────────────────────── -->
+    <main class="container">
+
+        <!-- Hero / Upload Section -->
+        <section class="hero" id="heroSection">
+            <div class="hero-content">
+                <div class="hero-badge">AI-Powered</div>
+                <h1>Daily Report <span class="gradient-text">Analyzer</span></h1>
+                <p class="hero-subtitle">Upload your school's daily PDF report and let AI extract homework & reminders instantly</p>
+            </div>
+
+            <!-- Upload Area -->
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-content">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-arrow-up"></i>
+                    </div>
+                    <h3>Drop your PDF here</h3>
+                    <p>or click to browse files</p>
+                    <span class="upload-hint">Supports PDF up to 16MB</span>
+                </div>
+                <input type="file" id="fileInput" accept=".pdf" hidden>
+
+                <!-- Upload progress -->
+                <div class="upload-progress" id="uploadProgress" hidden>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">Uploading...</p>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="hero-divider">
+                <span>or fetch automatically from Classera</span>
+            </div>
+
+            <!-- Fetch & Analyze Buttons -->
+            <div class="action-buttons" id="actionButtons">
+                <button class="btn btn-fetch" id="fetchBtn">
+                    <i class="fas fa-download"></i> Fetch from Classera
+                </button>
+                <button class="btn btn-analyze" id="analyzeBtn" disabled>
+                    <i class="fas fa-wand-magic-sparkles"></i> Analyze Report
+                </button>
+            </div>
+
+            <!-- Fetch Progress -->
+            <div class="fetch-progress-card" id="fetchProgressCard" hidden>
+                <div class="fetch-header">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span id="fetchStatusText">Connecting to Classera...</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="fetchProgressFill"></div>
+                </div>
+                <div class="fetch-steps">
+                    <div class="fetch-step" data-step="login"><i class="fas fa-key"></i> Login</div>
+                    <div class="fetch-step" data-step="navigate"><i class="fas fa-compass"></i> Navigate</div>
+                    <div class="fetch-step" data-step="download"><i class="fas fa-download"></i> Download</div>
+                    <div class="fetch-step" data-step="done"><i class="fas fa-check"></i> Done</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Bar -->
+        <section class="stats-bar" id="statsBar" hidden>
+            <div class="stat-card">
+                <div class="stat-icon pending"><i class="fas fa-clock"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statPending">0</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon completed"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statCompleted">0</span>
+                    <span class="stat-label">Completed</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon reminders"><i class="fas fa-bell"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statReminders">0</span>
+                    <span class="stat-label">Reminders</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon reports"><i class="fas fa-file-lines"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statReports">0</span>
+                    <span class="stat-label">Reports</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analysis Results -->
+        <section class="results" id="resultsSection" hidden>
+            <!-- Latest Analysis -->
+            <div class="result-card analysis-result" id="latestAnalysis" hidden>
+                <div class="card-header">
+                    <h2><i class="fas fa-sparkles"></i> Latest Analysis</h2>
+                    <span class="badge" id="analysisDate"></span>
+                </div>
+                <div class="analysis-summary" id="analysisSummary"></div>
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="two-columns">
+                <!-- Homework Column -->
+                <div class="result-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-book"></i> Homework</h2>
+                        <span class="badge" id="hwCount">0</span>
+                    </div>
+                    <div class="card-body" id="homeworkList">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No homework yet. Upload a report!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reminders Column -->
+                <div class="result-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-bell"></i> Reminders</h2>
+                        <span class="badge" id="reminderCount">0</span>
+                    </div>
+                    <div class="card-body" id="reminderList">
+                        <div class="empty-state">
+                            <i class="fas fa-bell-slash"></i>
+                            <p>No reminders yet. Upload a report!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report History -->
+            <div class="result-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clock-rotate-left"></i> Report History</h2>
+                    <button class="btn btn-danger btn-sm" id="clearMemoryBtn" title="Clear all data">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+                <div class="card-body" id="reportHistory">
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No reports analyzed yet</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ─── Settings Modal ──────────────────────────────────────────────── -->
+    <div class="modal-overlay" id="settingsModal" hidden>
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-gear"></i> Settings</h2>
+                <button class="btn-icon" id="closeSettingsBtn"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <!-- Gemini API -->
+                <div class="form-group">
+                    <label for="apiKeyInput">
+                        <i class="fas fa-key"></i> Gemini API Key
+                    </label>
+                    <div class="input-group">
+                        <input type="password" id="apiKeyInput" placeholder="Enter your Gemini API key..."
+                               class="form-input">
+                        <button class="btn-icon" id="toggleKeyVisibility" title="Show/Hide">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <small class="form-hint">
+                        Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a>
+                    </small>
+                </div>
+
+                <!-- Separator -->
+                <div class="settings-divider">
+                    <span>Classera Auto-Fetch</span>
+                </div>
+
+                <!-- Classera Username -->
+                <div class="form-group">
+                    <label for="classeraUser">
+                        <i class="fas fa-user"></i> Classera Username
+                    </label>
+                    <input type="text" id="classeraUser" placeholder="e.g. TUU4s0536"
+                           class="form-input">
+                </div>
+
+                <!-- Classera Password -->
+                <div class="form-group">
+                    <label for="classeraPass">
+                        <i class="fas fa-lock"></i> Classera Password
+                    </label>
+                    <div class="input-group">
+                        <input type="password" id="classeraPass" placeholder="Enter password..."
+                               class="form-input">
+                        <button class="btn-icon" id="toggleClasseraVis" title="Show/Hide">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label>Status</label>
+                    <div class="status-indicators">
+                        <div class="status-indicator" id="apiStatus">
+                            <i class="fas fa-circle"></i>
+                            <span>Gemini: Checking...</span>
+                        </div>
+                        <div class="status-indicator" id="classeraStatus">
+                            <i class="fas fa-circle"></i>
+                            <span>Classera: Checking...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="saveSettingsBtn">
+                    <i class="fas fa-save"></i> Save All
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Toast Container ─────────────────────────────────────────────── -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ─── Footer ──────────────────────────────────────────────────────── -->
+    <footer class="footer">
+        <p>Built with <i class="fas fa-heart" style="color: var(--accent)"></i> &mdash; Powered by Google Gemini AI</p>
+        <p class="footer-links">
+            <a href="https://github.com" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+        </p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/js/app.js?v=3"></script>
+</body>
+</html>

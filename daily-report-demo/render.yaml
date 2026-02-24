@@ -1,0 +1,16 @@
+# Render deployment config
+# https://render.com/docs/deploy-flask
+
+services:
+  - type: web
+    name: daily-report-analyzer
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
