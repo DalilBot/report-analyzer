@@ -1,9 +1,6 @@
-# Antigravity Developer Prompt Sequence: Egyptian MedusaJS v2 Platform
+# Antigravity Master Developer Prompt Sequence: Egyptian MedusaJS v2 Platform (Prompts 1–32)
 
-This prompt pack is specifically engineered for **Google Antigravity Agentic IDE** utilizing native Antigravity slash command triggers (`/goal`, `/browser`, `/learn`).
-
-> [!IMPORTANT]
-> **Execution Directives**: Send each prompt individually to your developer Antigravity instance. Every prompt starts with `/goal` for autonomous execution and includes explicit commands to clean up background servers/processes upon completion so the next prompt in the queue executes seamlessly.
+This prompt pack contains **32 atomic, step-by-step developer prompts** tailored for **Google Antigravity Agentic IDE** with native `/goal`, `/browser`, and `/learn` slash command triggers.
 
 ---
 
@@ -1060,5 +1057,165 @@ Implement subscription listener toggling soft-suspension on tenant instances upo
 <ACCEPTANCE_CRITERIA>
 - [ ] Soft-suspension listener updates tenant state while preserving PostgreSQL database intact.
 - [ ] All background tasks, processes, and dev servers are cleanly terminated upon completion.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+
+## Phase 8: Production Hardening & Performance Polish
+
+---
+### Developer Prompt 29: Implement Paymob Webhook Idempotency (Redis Lock) & Strict Production HMAC Enforcement
+
+```markdown
+/goal
+
+<TASK>
+Implement Redis-backed webhook idempotency deduplication and strict production HMAC signature enforcement in Paymob webhook controller.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Paymob webhook idempotency and strict HMAC enforcement pass build tests.
+- /learn: Persist Redis webhook deduplication pattern to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/api/hooks/paymob/route.ts` and inspect Redis container access in Medusa v2.
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `apps/backend/src/api/hooks/paymob/route.ts`
+   - Add Redis key check `paymob_tx_<transactionId>` with a 24-hour TTL (86,400s). If key exists, return HTTP `200 OK` with `{ deduplicated: true }`.
+   - In production (`process.env.NODE_ENV === "production"`), strictly reject requests with HTTP `401 Unauthorized` if `PAYMOB_HMAC_SECRET` is missing or signature verification fails.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store Paymob webhook deduplication logic.
+   - Terminate any running background dev servers, processes, or background tasks before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Paymob webhook route checks Redis key `paymob_tx_<id>` to prevent duplicate transaction processing.
+- [ ] Production environment strictly rejects non-verified HMAC webhooks with HTTP 401.
+- [ ] Backend build completes with exit code 0.
+- [ ] All background tasks and processes are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 30: Implement Bosta Shipping Rate Redis Caching per Governorate
+
+```markdown
+/goal
+
+<TASK>
+Implement Redis caching for Bosta governorate shipping rate calculations to optimize cart drawer performance.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Bosta shipping rate Redis caching compiles clean.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/modules/bosta/service.ts`.
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `apps/backend/src/modules/bosta/service.ts`
+   - In `calculatePrice()`, check Redis for cache key `bosta_rate_<governorate_id>`.
+   - If cache hit: Return cached shipping price immediately.
+   - If cache miss: Calculate price, store result in Redis with 1-hour TTL (3,600s), and return amount.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running background processes or dev servers before ending turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Bosta shipping rate calculation uses Redis caching with 1-hour TTL per governorate.
+- [ ] Backend build completes with exit code 0.
+- [ ] All background tasks and processes are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 31: Add Google Fonts Preconnect & Font-Display Swap in Next.js Storefront Layout
+
+```markdown
+/goal
+
+<TASK>
+Add Google Fonts preconnect headers and font-display swap rules for sub-second Arabic text rendering.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Next.js layout builds cleanly with font preconnect tags.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/storefront/src/app/layout.tsx`.
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `apps/storefront/src/app/layout.tsx`
+   - Add `<link rel="preconnect" href="https://fonts.googleapis.com">` and `<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous">`.
+   - Add Google Fonts stylesheet link for Arabic fonts (*Cairo*, *Tajawal*, *Alexandria*, *Readex Pro*) with `display=swap`.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run storefront build verification: `cd apps/storefront && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running background dev servers (e.g. stop `next dev`) or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Next.js storefront layout includes Google Fonts preconnect links and Arabic font swap definitions.
+- [ ] Storefront build completes with exit code 0.
+- [ ] All background tasks and dev servers are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 32: Implement Schema.org Arabic JSON-LD Structured Data Component for Product Pages
+
+```markdown
+/goal
+
+<TASK>
+Create React JSON-LD component generating Schema.org Product structured data in EGP currency and Egyptian Arabic.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Product JSON-LD component builds cleanly.
+- /learn: Persist Schema.org EGP e-commerce SEO patterns to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - Inspect Schema.org `Product` and `Offer` specifications for multi-currency EGP e-commerce.
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `apps/storefront/src/modules/products/components/product-json-ld.tsx`, `apps/storefront/src/app/[countryCode]/products/[handle]/page.tsx`
+   - Create `ProductJsonLd` component outputting `<script type="application/ld+json">` with `@type: "Product"`, `name`, `description` (Arabic), `offers`: `{ "@type": "Offer", "priceCurrency": "EGP", "price": amount, "availability": "https://schema.org/InStock" }`.
+   - Embed component in product detail page route.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run storefront build verification: `cd apps/storefront && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store Schema.org EGP structured data patterns.
+   - Terminate any running background dev servers or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Product JSON-LD component generates compliant Schema.org structured data snippets.
+- [ ] Storefront build completes with exit code 0.
+- [ ] All background tasks and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
