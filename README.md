@@ -1,597 +1,504 @@
-# Master Refactoring Developer Prompt Sequence: Egyptian MedusaJS v2 Platform
+# Dedicated Audit Line-Level Fix Prompts (`AUDIT_LINE_BY_LINE_PROMPTS_ONLY.md`)
 
-This prompt pack contains **15 atomic, step-by-step developer prompts** designed for **Google Antigravity Agentic IDE** with native `/goal`, `/browser`, and `/learn` slash command triggers to systematically repair and refactor all architectural, configuration, storefront, workflow, and DevOps defects.
+This file contains **ONLY the 11 hyper-focused developer prompts** corresponding 1-to-1 with the **11 File Audit Defects** in your line-by-line audit report. Zero older or extraneous prompts are included.
+
+> [!IMPORTANT]
+> **Exact 1-to-1 Mapping**: Send these 11 prompts sequentially (Prompt 1 through Prompt 11) to your developer Antigravity instance. Every prompt starts with `/goal` and includes native `/browser`, `/learn`, `<SUBAGENT_DELEGATION_DIRECTIVE>`, and process cleanup rules.
 
 ---
 
-## Phase 1: Backend Core & Configuration Repair
-
----
-### Developer Prompt 1: Register Custom Modules (`bosta` and `gemini-ai`) in `medusa-config.ts`
+### Developer Prompt 1: Fix `apps/backend/medusa-config.ts` (Lines 7–36)
+**Fixes Audit File #1**
 
 ```markdown
 /goal
 
 <TASK>
-Register missing custom modules (`bosta` and `gemini-ai`) in `apps/backend/medusa-config.ts` so the Medusa v2 container resolves services correctly.
+Fix fallback secrets (Lines 7–14) and register missing `bosta` and `gemini-ai` custom modules (Lines 18–36) in `apps/backend/medusa-config.ts`.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") if module path verification is needed to keep context clean.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until module registration passes Medusa backend build checks.
-- /learn: Persist Medusa v2 custom module configuration patterns to .gemini/rules.
+- /goal: Execute autonomously until medusa-config.ts compiles cleanly without fallback secrets.
+- /learn: Persist Medusa v2 module configuration patterns to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/medusa-config.ts` and inspect existing module declarations.
-   - Inspect `apps/backend/src/modules/bosta` and `apps/backend/src/modules/gemini-ai`.
+   - View `apps/backend/medusa-config.ts` (lines 7–36).
 
 2. IMPLEMENTATION PHASE:
    - Target file: `apps/backend/medusa-config.ts`
-   - Register `bosta` fulfillment provider service and `gemini-ai` service in the `modules` config array.
-   - Ensure options keys (`apiKey`, `baseUrl`) are wired to environment variables.
+   - **Line 7-14**: Remove hardcoded fallback secret strings (`"postgres://postgres:postgres@localhost:5432/medusa-db"` and `"supersecret_jwt_key_medusa_egypt_123"`). Require `process.env.DATABASE_URL` and `process.env.JWT_SECRET`.
+   - **Line 18-36**: Add `bosta` and `gemini-ai` module declarations into the `modules` array so the Medusa v2 container injects their services.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to record Medusa module registration rules.
-   - Terminate any running background dev servers or processes before completing turn.
+   - Execute `/learn` to store Medusa module registration rules.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `medusa-config.ts` includes `bosta` and `gemini-ai` module declarations in `modules` array.
+- [ ] `medusa-config.ts` contains zero hardcoded fallback secret strings on lines 7–14.
+- [ ] `bosta` and `gemini-ai` modules are registered in the `modules` array on lines 18–36.
 - [ ] Backend build completes with exit code 0.
-- [ ] All background tasks and dev servers are cleanly terminated.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 2: Fix Admin UI Browser Bundle Defect (`ai-copywriter.tsx` REST API Endpoint)
+
+### Developer Prompt 2: Fix `apps/backend/src/modules/paymob/service.ts` (Lines 57–91)
+**Fixes Audit File #2**
 
 ```markdown
 /goal
 
 <TASK>
-Fix Admin UI bundling defect by creating an authenticated REST API route `/admin/ai/generate-copy` and updating `ai-copywriter.tsx` to fetch from HTTP rather than importing backend files directly.
+Remove silent mock response fallbacks (Lines 57–67) and map dynamic customer billing payload (Lines 86–91) in `apps/backend/src/modules/paymob/service.ts`.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to inspect customer context types or search Paymob billing specifications across the codebase.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until admin UI widget compiles without backend file imports.
-- /learn: Persist Medusa Admin Extension REST communication rules to .gemini/rules.
+- /goal: Execute autonomously until Paymob service accurately maps customer billing payloads.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/admin/widgets/ai-copywriter.tsx` and identify backend file import `../../modules/gemini-ai/client`.
+   - View `apps/backend/src/modules/paymob/service.ts` (lines 57–91).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/api/admin/ai/generate-copy/route.ts`, `apps/backend/src/admin/widgets/ai-copywriter.tsx`
-   - Create authenticated admin REST API endpoint `POST /admin/ai/generate-copy` in backend API routes.
-   - Refactor `ai-copywriter.tsx` to remove direct backend client imports and fetch data via HTTP POST request.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to record Admin widget REST communication rules.
-   - Terminate any running background dev servers or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] `ai-copywriter.tsx` contains zero direct imports of backend module files.
-- [ ] `POST /admin/ai/generate-copy` REST API route handles Gemini AI copy generation.
-- [ ] Backend build completes with exit code 0.
-- [ ] All background tasks and processes are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 3: Implement Native Medusa v2 Workflows (`@medusajs/workflows-sdk`)
-
-```markdown
-/goal
-
-<TASK>
-Implement transactional Medusa v2 workflows in `apps/backend/src/workflows/` with atomic steps and compensation rollbacks.
-</TASK>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until workflows pass Medusa v2 type checks.
-- /browser: Verify Medusa v2 Workflows SDK patterns if needed.
-- /learn: Persist Medusa v2 workflow architecture to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - Research `@medusajs/workflows-sdk` `createWorkflow` and `createStep` patterns.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/workflows/paymob-payment-workflow.ts`, `apps/backend/src/workflows/bosta-fulfillment-workflow.ts`, `apps/backend/src/workflows/eta-tax-workflow.ts`
-   - Implement `createPaymobPaymentWorkflow` with atomic step to initiate payment and rollback compensation step on failure.
-   - Implement `createBostaFulfillmentWorkflow` with delivery creation step and AWB rollback.
-   - Implement `submitEtaTaxReceiptWorkflow` with payload formatting and retry compensation steps.
+   - Target file: `apps/backend/src/modules/paymob/service.ts`
+   - **Line 57-67**: In production (`process.env.NODE_ENV === "production"`), throw an Error if `apiKey` is missing instead of returning silent mock data.
+   - **Line 86-91**: Replace hardcoded `billingData` (`"Customer"`, `"Order"`, `"customer@example.com"`, `"01000000000"`) with real customer context:
+     ```typescript
+     first_name: input.context?.customer?.first_name || "Guest",
+     last_name: input.context?.customer?.last_name || "User",
+     email: input.context?.customer?.email || "customer@example.com",
+     phone_number: input.context?.customer?.phone || "000000000",
+     ```
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to record Medusa v2 workflow execution patterns.
-   - Terminate any running background dev servers or processes before completing turn.
+   - Terminate any running subagents, background processes, or dev servers before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `src/workflows/` contains typed Medusa v2 workflows for Paymob, Bosta, and ETA Tax.
-- [ ] Workflows include step compensation rollback logic.
+- [ ] Paymob billing payload dynamically maps real customer first_name, last_name, email, and phone (Lines 86–91).
+- [ ] Missing API key in production throws an explicit Error instead of returning silent mock objects (Lines 57–67).
 - [ ] Backend build completes with exit code 0.
-- [ ] All background tasks and processes are cleanly terminated.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 4: Eliminate In-Memory `setImmediate()` Queues & Implement BullMQ Event Workers
+
+### Developer Prompt 3: Fix `apps/backend/src/modules/bosta/service.ts` (Lines 12–18)
+**Fixes Audit File #3**
 
 ```markdown
 /goal
 
 <TASK>
-Remove fake in-memory `setImmediate()` queues and implement Redis BullMQ event workers for asynchronous background processing.
+Replace local in-memory JavaScript `Map` (`rateCacheMap` on lines 12–18) in `apps/backend/src/modules/bosta/service.ts` with Medusa's distributed Redis caching service `@medusajs/caching`.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Spawn a `research` subagent using `invoke_subagent` to research `@medusajs/caching` container resolution patterns in Medusa v2.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until BullMQ background worker queue passes backend build tests.
+- /goal: Execute autonomously until Bosta service uses distributed Redis rate caching.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - Search backend for `setImmediate` or in-memory array queues using `grep_search`.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/jobs/background-queue.ts`, `apps/backend/src/subscribers/order-placed-queue.ts`
-   - Remove all `setImmediate()` in-memory queues.
-   - Wire background tasks to Medusa event bus and Redis BullMQ queues (`background_jobs_queue`).
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running background dev servers or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Zero `setImmediate()` fake queues in codebase.
-- [ ] Background tasks process via BullMQ / Medusa Event Bus.
-- [ ] Backend build completes with exit code 0.
-- [ ] All background tasks and processes are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 5: Replace Local `Map` in `bosta/service.ts` with Distributed Redis Caching
-
-```markdown
-/goal
-
-<TASK>
-Replace local JavaScript `Map` rate cache in `bosta/service.ts` with distributed Redis key-value caching.
-</TASK>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Bosta service distributed Redis caching compiles clean.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/bosta/service.ts` and locate local `rateCacheMap`.
+   - View `apps/backend/src/modules/bosta/service.ts` (lines 12–18).
 
 2. IMPLEMENTATION PHASE:
    - Target file: `apps/backend/src/modules/bosta/service.ts`
-   - Replace `rateCacheMap` with Redis key-value caching (`BOSTA_RATE_<governorate_id>`, 1-hour TTL).
+   - Remove local `rateCacheMap` (lines 12–18).
+   - Use Medusa `@medusajs/caching` container service or Redis client to store and retrieve `BOSTA_RATE_<governorate_id>` with a 1-hour (3,600s) TTL.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running background dev servers or processes before completing turn.
+   - Terminate any running subagents, background processes, or dev servers before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `bosta/service.ts` contains zero local `Map` caches; uses Redis key-value store.
+- [ ] `bosta/service.ts` contains zero local `Map` instances on lines 12–18; utilizes distributed Redis caching.
 - [ ] Backend build completes with exit code 0.
-- [ ] All background tasks and processes are cleanly terminated.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 6: Implement Atomic Redis `NX` Transaction Lock for Paymob Webhook Idempotency
+
+### Developer Prompt 4: Fix `apps/backend/src/admin/widgets/ai-copywriter.tsx` (Line 4)
+**Fixes Audit File #4**
 
 ```markdown
 /goal
 
 <TASK>
-Implement atomic Redis `NX` transaction locking in Paymob webhook controller to prevent duplicate callback execution.
+Fix browser import defect on line 4 of `apps/backend/src/admin/widgets/ai-copywriter.tsx` by creating an authenticated REST API route `/admin/ai/generate-copy`.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to delegate creation of the backend API route or inspection of admin widget API patterns to a subagent.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Paymob webhook Redis lock passes build checks.
+- /goal: Execute autonomously until Admin UI widget fetches AI copy via HTTP REST API.
+- /learn: Persist Admin UI REST communication rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/api/hooks/paymob/route.ts`.
+   - View `apps/backend/src/admin/widgets/ai-copywriter.tsx` (line 4).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/api/hooks/paymob/route.ts`
-   - Add atomic Redis key check `paymob_tx_<transactionId>` with `NX` and 24-hour TTL (86,400s).
-   - If transaction key exists, return HTTP `200 OK` with `{ deduplicated: true }`.
+   - Target files: `apps/backend/src/api/admin/ai/generate-copy/route.ts`, `apps/backend/src/admin/widgets/ai-copywriter.tsx`
+   - Create authenticated Medusa Admin REST API route `POST /admin/ai/generate-copy`.
+   - Remove `import { GeminiAIStudioClient } from "../../modules/gemini-ai/client";` on line 4 of `ai-copywriter.tsx`.
+   - Refactor `ai-copywriter.tsx` to fetch copy via HTTP POST to `/admin/ai/generate-copy`.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running background dev servers or processes before completing turn.
+   - Execute `/learn` to store Admin widget REST API rules.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Paymob webhook route uses atomic Redis `NX` key lock (`paymob_tx_<id>`).
+- [ ] Line 4 import `GeminiAIStudioClient` is removed from `ai-copywriter.tsx`.
+- [ ] Admin widget fetches via authenticated `/admin/ai/generate-copy` HTTP endpoint.
 - [ ] Backend build completes with exit code 0.
-- [ ] All background tasks and processes are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 7: Implement ETA Subscriber Exponential Backoff & Dead-Letter Queue (DLQ)
-
-```markdown
-/goal
-
-<TASK>
-Refactor `order-placed-eta.ts` subscriber to use exponential backoff retry logic and Dead-Letter Queue (DLQ) logging.
-</TASK>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until ETA subscriber exponential backoff passes build verification.
-- /learn: Persist Dead-Letter Queue (DLQ) retry patterns to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/subscribers/order-placed-eta.ts`.
-
-2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/subscribers/order-placed-eta.ts`
-   - Wrap ETA API submission in an exponential backoff retry loop (max 3 retries: 1s, 5s, 25s).
-   - On final failure, write event record to `EtaReceiptAudit` table with status `FAILED_DLQ` for manual retry.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store DLQ retry patterns.
-   - Terminate any running background dev servers or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] ETA subscriber includes exponential backoff retry loop (max 3 retries).
-- [ ] Failed submissions log to `EtaReceiptAudit` with `FAILED_DLQ` status.
-- [ ] Backend build completes with exit code 0.
-- [ ] All background tasks and processes are cleanly terminated.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
 
-## Phase 2: Storefront App Router & SDK Real Data Alignment
-
----
-### Developer Prompt 8: Refactor Storefront Homepage (`app/page.tsx`) to React Server Component (Remove `"use client"`)
+### Developer Prompt 5: Fix `apps/storefront/src/app/page.tsx` (Lines 1–12)
+**Fixes Audit File #5**
 
 ```markdown
 /goal
 
 <TASK>
-Refactor Storefront homepage `apps/storefront/src/app/page.tsx` into a React Server Component by removing `"use client"`.
+Refactor `apps/storefront/src/app/page.tsx` (lines 1–12) into a React Server Component (RSC) by removing `"use client"`.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Delegate identification of client-side interactive sub-components in `app/page.tsx` to a `research` subagent using `invoke_subagent`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until homepage compiles as a pure RSC.
+- /goal: Execute autonomously until homepage compiles as a pure React Server Component.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/storefront/src/app/page.tsx` and identify client-side state hooks causing `"use client"`.
+   - View `apps/storefront/src/app/page.tsx` (lines 1–12).
 
 2. IMPLEMENTATION PHASE:
    - Target file: `apps/storefront/src/app/page.tsx`
-   - Extract interactive UI widgets (search bar, cart drawer) into small client components (`"use client"`).
-   - Remove `"use client"` from `app/page.tsx` so top-level page renders as a pure React Server Component.
+   - Remove `"use client"` directive from line 1.
+   - Extract interactive client widgets into separate `"use client"` components.
+   - Convert `Home()` into an `async` React Server Component that fetches storefront data on the server.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run storefront build verification: `cd apps/storefront && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running background dev servers (e.g. `next dev`) before completing turn.
+   - Terminate any running subagents, background dev servers (e.g. `next dev`) before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `app/page.tsx` does NOT contain `"use client"` directive.
+- [ ] `app/page.tsx` line 1 does NOT contain `"use client"`.
+- [ ] Homepage renders as an `async` React Server Component.
 - [ ] Storefront build completes with exit code 0.
-- [ ] All background tasks and dev servers are cleanly terminated.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 9: Eliminate Hardcoded Mock Data & Wire Storefront to Live Medusa JS SDK
+
+### Developer Prompt 6: Fix `apps/storefront/src/lib/context/cart-context.tsx` (Lines 24–48)
+**Fixes Audit File #6**
 
 ```markdown
 /goal
 
 <TASK>
-Remove hardcoded `featuredProducts` and `sampleProducts` arrays from storefront and query live Medusa JS SDK.
+Synchronize cart items with Medusa backend DB via JS SDK in `apps/storefront/src/lib/context/cart-context.tsx` (lines 24–48).
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Spawn a subagent via `invoke_subagent` to research `@medusajs/js-sdk` store cart methods (`sdk.store.carts.lineItems.create()`).
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until storefront products load directly from Medusa JS SDK.
+- /goal: Execute autonomously until cart state syncs server-side with Medusa JS SDK.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - Search for `sampleProducts` or `featuredProducts` across `apps/storefront` using `grep_search`.
+   - View `apps/storefront/src/lib/context/cart-context.tsx` (lines 24–48).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/src/app/page.tsx`, `apps/storefront/src/modules/products/components/product-list.tsx`
-   - Delete mock product arrays.
-   - Fetch live products using `medusa.products.list()` via `src/lib/medusa.ts`.
+   - Target file: `apps/storefront/src/lib/context/cart-context.tsx`
+   - Wire `addItem`, `removeItem`, and `updateQuantity` to call Medusa JS SDK endpoints (`sdk.store.carts.lineItems.create()`, `update()`, `delete()`).
+   - Ensure cart ID is persisted server-side in Medusa database as well as 30-day persistent cookie.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run storefront build verification: `cd apps/storefront && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running background dev servers or processes before completing turn.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Zero hardcoded `sampleProducts` or `featuredProducts` arrays in storefront code.
-- [ ] Products fetch dynamically from Medusa SDK `medusa.products.list()`.
+- [ ] Cart Context (lines 24–48) syncs line items with Medusa backend SDK endpoints.
 - [ ] Storefront build completes with exit code 0.
-- [ ] All background tasks and dev servers are cleanly terminated.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 10: Build Full Localized Egyptian `/checkout` Route
+
+### Developer Prompt 7: Fix `apps/storefront/src/modules/home/components/home-client-view.tsx` (Line 168)
+**Fixes Audit File #7**
 
 ```markdown
 /goal
 
 <TASK>
-Build complete localized Egyptian `/checkout` route with 27 Governorates selector, Paymob payment iframe, and COD submission.
+Replace standard HTML `<img>` tag on line 168 of `apps/storefront/src/modules/home/components/home-client-view.tsx` with Next.js `<Image />` component.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to search for any other unoptimized `<img>` tags across storefront modules.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until checkout route passes storefront build tests.
-- /learn: Persist Egyptian checkout UI flow to .gemini/rules.
+- /goal: Execute autonomously until all image elements use Next.js Image component.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - Inspect Governorate utilities `packages/shared-types/src/governorate-utils.ts` and Paymob payment provider.
+   - View `apps/storefront/src/modules/home/components/home-client-view.tsx` (line 168).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/storefront/src/app/[countryCode]/checkout/page.tsx`
-   - Build multi-step checkout form:
-     1. Customer shipping address with Egyptian Governorate & District dropdown.
-     2. Bosta real-time shipping rate calculation display.
-     3. Payment Method Selection (Paymob Card Iframe / Mobile Wallet OTP / ValU / COD).
-     4. Order confirmation & Bosta waybill tracking link.
+   - Target file: `apps/storefront/src/modules/home/components/home-client-view.tsx`
+   - Replace standard HTML `<img>` tag on line 168 with `import Image from "next/image"`.
+   - Provide proper `alt`, `width`, `height`, `sizes`, and `priority` props.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run storefront build verification: `cd apps/storefront && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store Egyptian checkout UI patterns.
-   - Terminate any running background dev servers or processes before completing turn.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `app/[countryCode]/checkout/page.tsx` exists and compiles cleanly.
-- [ ] Supports 27 Governorates selection, Bosta shipping rates, Paymob payment options, and COD.
+- [ ] Line 168 of `home-client-view.tsx` uses Next.js `<Image />` component.
 - [ ] Storefront build completes with exit code 0.
-- [ ] All background tasks and dev servers are cleanly terminated.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 11: Build Customer `/account` Dashboard Route
+
+### Developer Prompt 8: Fix `infrastructure/docker/Dockerfile.backend` (Line 45)
+**Fixes Audit File #8**
 
 ```markdown
 /goal
 
 <TASK>
-Build Customer `/account` dashboard route displaying order history, Bosta shipment tracking, and profile settings.
+Fix process wrapping on line 45 of `infrastructure/docker/Dockerfile.backend` to ensure graceful OS signal handling.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` if Dockerfile multi-stage optimizations require research.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until customer account dashboard compiles cleanly.
+- /goal: Execute autonomously until Dockerfile CMD executes Node directly.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - Inspect Medusa JS SDK customer and order API methods.
+   - View `infrastructure/docker/Dockerfile.backend` (line 45).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/storefront/src/app/[countryCode]/account/page.tsx`
-   - Build customer dashboard UI showing placed orders, Bosta tracking links, saved shipping addresses, and phone number profile settings.
+   - Target file: `infrastructure/docker/Dockerfile.backend`
+   - Change line 45 from `CMD ["npm", "run", "start"]` to `CMD ["node", "dist/main.js"]` (or direct node entrypoint) so OS signals (`SIGTERM`, `SIGINT`) reach Node directly.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run storefront build verification: `cd apps/storefront && npm run build`
+   - Run Docker compose config validation: `docker compose -f infrastructure/docker/docker-compose.tenant.yml config`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running background dev servers or processes before completing turn.
+   - Terminate any active subagents or background tasks before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `app/[countryCode]/account/page.tsx` exists and compiles cleanly.
-- [ ] Displays customer order history and Bosta tracking status.
-- [ ] Storefront build completes with exit code 0.
-- [ ] All background tasks and dev servers are cleanly terminated.
+- [ ] Line 45 of `Dockerfile.backend` executes Node directly (`CMD ["node", "dist/main.js"]`).
+- [ ] Docker Compose config passes validation.
+- [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 12: Replace Standard `<img>` Tags with Optimized Next.js `<Image />` Components
+
+### Developer Prompt 9: Fix `infrastructure/docker/docker-compose.tenant.yml` (Line 69)
+**Fixes Audit File #9**
 
 ```markdown
 /goal
 
 <TASK>
-Replace standard HTML `<img>` tags across storefront with Next.js `<Image />` components for WebP conversion and responsive sizing.
+Fix browser-inaccessible internal hostname on line 69 of `infrastructure/docker/docker-compose.tenant.yml`.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Delegate environment variable resolution checks to a subagent using `invoke_subagent`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until all image tags are updated to Next.js Image components.
+- /goal: Execute autonomously until NEXT_PUBLIC_MEDUSA_BACKEND_URL points to accessible tenant public URL.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - Search for `<img>` tags across `apps/storefront` using `grep_search`.
+   - View `infrastructure/docker/docker-compose.tenant.yml` (line 69).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/src/modules/**/*`
-   - Replace HTML `<img>` tags with `import Image from "next/image"`.
-   - Add `alt`, `width`, `height`, `sizes`, and `priority` attributes.
+   - Target file: `infrastructure/docker/docker-compose.tenant.yml`
+   - Change line 69 from `NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://backend:9000` to point to dynamic tenant environment variable `${TENANT_PUBLIC_BACKEND_URL:-http://localhost:9000}`.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run storefront build verification: `cd apps/storefront && npm run build`
+   - Run Docker compose config validation: `docker compose -f infrastructure/docker/docker-compose.tenant.yml config`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running background dev servers or processes before completing turn.
+   - Terminate any active subagents or background tasks before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Zero unoptimized standard `<img>` tags in storefront components.
-- [ ] Storefront build completes with exit code 0.
-- [ ] All background tasks and dev servers are cleanly terminated.
+- [ ] Line 69 of `docker-compose.tenant.yml` configures `NEXT_PUBLIC_MEDUSA_BACKEND_URL` for public browser resolution.
+- [ ] Docker Compose config passes validation.
+- [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
 
-## Phase 3: DevOps, Monorepo & Container Optimization
-
----
-### Developer Prompt 13: Add Root `package.json` Monorepo Workspaces Configuration
+### Developer Prompt 10: Fix `infrastructure/scripts/provision-tenant.sh` (Line 100)
+**Fixes Audit File #10**
 
 ```markdown
 /goal
 
 <TASK>
-Create root `package.json` with npm/pnpm workspaces configuration for monorepo package linking and hot-reloading.
+Remove migration failure suppression `|| true` on line 100 of `infrastructure/scripts/provision-tenant.sh`.
 </TASK>
 
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` if bash healthcheck polling loops need syntax verification.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until workspace linking passes build check.
+- /goal: Execute autonomously until tenant provisioning script aborts deployment on migration failure.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - Inspect workspace root directory structure using `list_dir`.
-
-2. IMPLEMENTATION PHASE:
-   - Target file: `package.json` (Root)
-   - Create root `package.json` with `"private": true`, `"workspaces": ["apps/*", "packages/*"]`, and monorepo build scripts (`npm run build`).
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run workspace verification: `npm install && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running background dev servers or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Root `package.json` includes `"workspaces": ["apps/*", "packages/*"]`.
-- [ ] Root `npm run build` triggers build across apps and packages cleanly.
-- [ ] All background tasks and dev servers are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 14: Upgrade Backend & Storefront Dockerfiles to Multi-Stage Production Builds
-
-```markdown
-/goal
-
-<TASK>
-Rewrite Backend and Storefront Dockerfiles into multi-stage production builds running as non-root node users.
-</TASK>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Docker Compose template validates with multi-stage builds.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `infrastructure/docker/Dockerfile.backend` and `infrastructure/docker/Dockerfile.storefront`.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `infrastructure/docker/Dockerfile.backend`, `infrastructure/docker/Dockerfile.storefront`
-   - Rewrite Dockerfiles as 3-stage builds (`deps` $\rightarrow$ `builder` $\rightarrow$ `runner`).
-   - Configure runner stage to execute under non-root `USER node` for security and minimal image size.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run Docker config validation: `docker compose -f infrastructure/docker/docker-compose.tenant.yml config`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any active background tasks before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Dockerfiles use multi-stage builds (`deps`, `builder`, `runner`).
-- [ ] Containers execute under non-root `node` user.
-- [ ] All background tasks and dev servers are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 15: Replace `sleep 5` in `provision-tenant.sh` with Healthcheck Polling
-
-```markdown
-/goal
-
-<TASK>
-Replace brittle `sleep 5` in `provision-tenant.sh` with PostgreSQL healthcheck polling (`pg_isready` / `curl` loop).
-</TASK>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until tenant provisioning script passes bash syntax check.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `infrastructure/scripts/provision-tenant.sh` and locate `sleep 5`.
+   - View `infrastructure/scripts/provision-tenant.sh` (line 100).
 
 2. IMPLEMENTATION PHASE:
    - Target file: `infrastructure/scripts/provision-tenant.sh`
-   - Remove `sleep 5`.
-   - Implement `until pg_isready ...` or Docker healthcheck polling loop to wait dynamically until PostgreSQL is ready before running `medusa db:migrate`.
+   - Remove `|| true` from line 100 (`docker compose exec -T backend npx medusa db:migrate`).
+   - Add error check ensuring script exits with non-zero status if database migration fails.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run bash syntax check: `bash -n infrastructure/scripts/provision-tenant.sh`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running shell tasks before completing turn.
+   - Terminate any running subagents or shell tasks before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Zero `sleep 5` arbitrary delays in `provision-tenant.sh`.
-- [ ] Uses dynamic container healthcheck polling before executing database migrations.
+- [ ] Line 100 of `provision-tenant.sh` does NOT contain `|| true`.
+- [ ] Migration failure causes provisioning script to exit with error code.
 - [ ] Script passes `bash -n` syntax check cleanly.
-- [ ] All background tasks are cleanly terminated.
+- [ ] All subagents and background tasks are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+
+### Developer Prompt 11: Fix `packages/shared-types/package.json` (Lines 5–8)
+**Fixes Audit File #11**
+
+```markdown
+/goal
+
+<TASK>
+Fix TypeScript build and main entrypoint configuration in `packages/shared-types/package.json` (lines 5–8).
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to test shared-types build outputs in clean subagent contexts.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until packages/shared-types emits compiled JS and d.ts declaration files.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `packages/shared-types/package.json` (lines 5–8).
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `packages/shared-types/package.json`
+   - Update lines 5–8:
+     ```json
+     "main": "dist/index.js",
+     "types": "dist/index.d.ts",
+     "scripts": {
+       "build": "tsc"
+     }
+     ```
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run build verification: `cd packages/shared-types && npm run build`
+   - Verify `dist/index.js` and `dist/index.d.ts` are generated.
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running subagents or background tasks before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Lines 5–8 of `packages/shared-types/package.json` set `"main": "dist/index.js"` and `"types": "dist/index.d.ts"`.
+- [ ] `npm run build` executes `tsc` and emits `dist/` build files.
+- [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
