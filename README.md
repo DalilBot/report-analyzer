@@ -1,6 +1,6 @@
-# Antigravity Master Developer Prompt Sequence: Egyptian MedusaJS v2 Platform (Prompts 1–32)
+# Antigravity Master Developer Prompt Sequence: Egyptian MedusaJS v2 Platform (Prompts 1–37)
 
-This prompt pack contains **32 atomic, step-by-step developer prompts** tailored for **Google Antigravity Agentic IDE** with native `/goal`, `/browser`, and `/learn` slash command triggers.
+This prompt pack contains **37 atomic, step-by-step developer prompts** tailored for **Google Antigravity Agentic IDE** with native `/goal`, `/browser`, and `/learn` slash command triggers.
 
 ---
 
@@ -1219,3 +1219,205 @@ Create React JSON-LD component generating Schema.org Product structured data in 
 - [ ] All background tasks and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
+
+---
+
+## Phase 9: Perfect 10/10 Enterprise Hardening Pack
+
+---
+### Developer Prompt 33: Implement Redis Transaction Idempotency Lock for Paymob Webhooks
+
+```markdown
+/goal
+
+<TASK>
+Implement Redis atomic transaction idempotency locking in Paymob webhook route to prevent duplicate callback processing.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Paymob webhook idempotency lock passes build checks.
+- /learn: Persist Redis transaction locking patterns to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/api/hooks/paymob/route.ts` and inspect Redis container access in Medusa v2.
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `apps/backend/src/api/hooks/paymob/route.ts`
+   - Use Redis client to set atomic key `paymob_tx_<transactionId>` with `NX` (only if not exists) and 24-hour TTL (86,400s).
+   - If key already exists, return HTTP `200 OK` immediately with `{ deduplicated: true, message: "Transaction already processed" }`.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to record Redis transaction idempotency patterns.
+   - Terminate any running background dev servers, processes, or background tasks before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Paymob webhook route uses atomic Redis `NX` lock on `paymob_tx_<id>` to prevent duplicate executions.
+- [ ] Backend build completes with exit code 0.
+- [ ] All background tasks and processes are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 34: Implement Redis Rate Caching for Bosta Governorate Shipping Fees
+
+```markdown
+/goal
+
+<TASK>
+Implement Redis rate caching for Bosta governorate shipping fee calculations to eliminate REST API latency during peak flash sales.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Bosta shipping fee Redis caching compiles cleanly.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/modules/bosta/service.ts`.
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `apps/backend/src/modules/bosta/service.ts`
+   - In `calculatePrice()`, query Redis for cache key `BOSTA_RATE_<governorate_id>`.
+   - On cache hit: Return cached shipping price immediately.
+   - On cache miss: Calculate price from Bosta API/rules, store in Redis with 1-hour TTL (3,600s), and return result.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running background processes or dev servers before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Bosta shipping fee calculation queries and populates Redis cache key `BOSTA_RATE_<id>` with 1-hour TTL.
+- [ ] Backend build completes with exit code 0.
+- [ ] All background tasks and dev servers are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 35: Implement PKCS#11 Hardware Token REST Proxy Client for Real-Time ETA e-Receipt Signing
+
+```markdown
+/goal
+
+<TASK>
+Implement PKCS#11 REST proxy signing client for physical USB HSM hardware tokens (Egypt Trust / MICS certificates) in ETA Tax module.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until ETA PKCS#11 HSM signing client passes build tests.
+- /browser: Verify ETA Portal PKCS#11 signature structure if needed.
+- /learn: Persist ETA hardware signing patterns to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/modules/eta-tax/client.ts` and `apps/backend/src/modules/eta-tax/payload-builder.ts`.
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `apps/backend/src/modules/eta-tax/client.ts`, `apps/backend/src/modules/eta-tax/hsm-signer.ts`
+   - Create `hsm-signer.ts` client that connects to local PKCS#11 REST proxy daemon (`http://localhost:8585/sign`).
+   - Sign canonical e-Receipt JSON payload with CAdES-BES / ES-BES signature structure before transmitting payload to ETA submission API.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store ETA PKCS#11 HSM signing patterns.
+   - Terminate any running background dev servers or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] ETA tax client supports PKCS#11 REST proxy integration for physical USB HSM hardware token signing.
+- [ ] Backend build completes with exit code 0.
+- [ ] All background tasks and processes are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 36: Implement Automated Caddy / Coolify Proxy Orchestrator for Self-Serve Custom Domains
+
+```markdown
+/goal
+
+<TASK>
+Implement automated Caddy reverse-proxy script for self-serve merchant custom domain routing and auto-SSL provisioning.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Caddy domain router script passes bash syntax check.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - Inspect `infrastructure/scripts/provision-tenant.sh` and Caddy REST API `/config/apps/http/servers`.
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `infrastructure/scripts/caddy-domain-router.sh`, `infrastructure/scripts/provision-tenant.sh`
+   - Create `caddy-domain-router.sh` accepting `TENANT_ID`, `CUSTOM_DOMAIN`, and `CONTAINER_PORT`.
+   - Send API payload to Caddy REST API to provision dynamic reverse proxy route and automatic Let's Encrypt SSL certificate for merchant domain (`merchantbrand.com`).
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run bash syntax check: `bash -n infrastructure/scripts/caddy-domain-router.sh`
+   - Run provisioning syntax check: `bash -n infrastructure/scripts/provision-tenant.sh`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running background tasks or shell jobs before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] `caddy-domain-router.sh` passes bash syntax check (`bash -n`) and provisions dynamic SSL reverse proxy routes.
+- [ ] All background tasks are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 37: Implement BullMQ Background Worker Queue for Asynchronous Admin AI Copywriter Jobs
+
+```markdown
+/goal
+
+<TASK>
+Implement BullMQ background worker queue for non-blocking asynchronous LLM copywriter generation in Medusa Admin.
+</TASK>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until BullMQ AI copywriter worker queue passes build verification.
+- /learn: Persist BullMQ background worker patterns to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - Inspect `apps/backend/src/admin/widgets/ai-copywriter.tsx` and Redis connection options in Medusa v2.
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `apps/backend/src/jobs/ai-copywriter-worker.ts`, `apps/backend/src/api/admin/ai-copywriter/route.ts`
+   - Implement BullMQ queue `ai_copywriter_queue`.
+   - API route dispatches copywriter job to queue; worker process handles LLM generation asynchronously and updates product metadata when complete.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store BullMQ background worker patterns.
+   - Terminate any running background dev servers, processes, or background tasks before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Admin AI Copywriter dispatches tasks to BullMQ queue for asynchronous background execution.
+- [ ] Backend build completes with exit code 0.
+- [ ] All background tasks and dev servers are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
