@@ -1,85 +1,133 @@
-# Dedicated Advanced Improvements Developer Prompt Pack (`PROMPT_SEQUENCE_ADVANCED_IMPROVEMENTS.md`)
+# Master Developer Prompt Pack: Latest Codebase Audit Fixes (`PROMPT_SEQUENCE_LATEST_AUDIT.md`)
 
-This prompt pack contains **7 targeted developer prompts** engineered for **Google Antigravity Agentic IDE** to implement the advanced architectural enhancements identified in the comparative evaluation report. Zero older problems are included.
+This prompt pack contains **11 hyper-focused developer prompts** engineered for **Google Antigravity Agentic IDE** to resolve every critical bug, security vulnerability, financial logic gap, and deployment issue identified in the latest codebase evaluation report. Zero older problems are included.
 
 > [!IMPORTANT]
-> **Instructions for Use**: Send these 7 prompts sequentially (Prompt 1 through Prompt 7) to your developer Antigravity instance. Every prompt starts with `/goal` and includes native `/browser`, `/learn`, `<SUBAGENT_DELEGATION_DIRECTIVE>`, and process cleanup rules.
+> **Subagent Directive**: Every prompt explicitly instructs the receiving Antigravity agent to invoke subagents (`invoke_subagent`) for codebase research, file inspections, or parallel sub-tasks to maintain clean context and maximize execution speed.
 
 ---
 
-### Developer Prompt 1: Implement Live Paymob Refund & Void API Calls in `paymob/service.ts`
+## Part 1: Backend Core, Security & Financial API Fixes (Prompts 1–6)
+
+---
+### Developer Prompt 1: Strict Production CORS & Bosta Webhook HMAC Signature Verification
 
 ```markdown
 /goal
 
 <TASK>
-Implement live HTTP requests to Paymob's `/api/acceptance/void_refund/refund` endpoint in `refundPayment()` and void calls in `cancelPayment()` inside `apps/backend/src/modules/paymob/service.ts`.
+Enforce strict production CORS fallbacks in `medusa-config.ts` and implement Bosta webhook HMAC signature verification in `apps/backend/src/api/hooks/bosta/route.ts`.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") to inspect Paymob REST API v2 refund payload specifications if needed.
+- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") to inspect Bosta webhook authentication documentation and HMAC header validation.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Paymob live refund and void API calls pass TypeScript checks.
-- /browser: Use browser to inspect Paymob REST API v2 refund endpoint documentation.
-- /learn: Persist Paymob refund/void integration patterns to .gemini/rules.
+- /goal: Execute autonomously until Bosta webhook HMAC verification and CORS safety pass backend build checks.
+- /learn: Persist webhook security and HMAC verification rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/paymob/client.ts` and `apps/backend/src/modules/paymob/service.ts`.
+   - View `apps/backend/medusa-config.ts` (lines 10–12) and `apps/backend/src/api/hooks/bosta/route.ts` (lines 15–24).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/modules/paymob/client.ts`, `apps/backend/src/modules/paymob/service.ts`
-   - Implement `refundPaymobTransaction(authToken, transactionId, amountCents)` in `client.ts` calling `POST https://accept.paymob.com/api/acceptance/void_refund/refund`.
-   - Update `refundPayment()` in `service.ts` to call `refundPaymobTransaction()` with real transaction ID and amount in piastres instead of returning simulated objects.
-   - Update `cancelPayment()` to call Paymob void API.
+   - Target files: `apps/backend/medusa-config.ts`, `apps/backend/src/api/hooks/bosta/route.ts`
+   - **`medusa-config.ts`**: Throw an error if CORS environment variables (`STORE_CORS`, `ADMIN_CORS`) are missing in production (`process.env.NODE_ENV === "production"`) instead of exposing `localhost` development ports.
+   - **`bosta/route.ts`**: Validate incoming Bosta webhook signature headers (`x-bosta-signature` or `authorization`) against `process.env.BOSTA_WEBHOOK_SECRET`. Return HTTP `401 Unauthorized` if signature is missing or invalid.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store Paymob refund integration patterns.
+   - Execute `/learn` to store Bosta webhook security patterns.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `PaymobClient` includes `refundPaymobTransaction()` sending HTTP POST to Paymob refund API.
-- [ ] `refundPayment()` and `cancelPayment()` in `service.ts` execute live API calls.
+- [ ] Subagents delegated for Bosta webhook HMAC header research.
+- [ ] `medusa-config.ts` throws error in production if CORS origins are unconfigured.
+- [ ] Bosta webhook endpoint returns HTTP `401 Unauthorized` on missing or invalid signature.
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-
-### Developer Prompt 2: Implement Dynamic Package Weight Tiers in Bosta Fulfillment Service
+### Developer Prompt 2: Implement Real Paymob `authorizePayment` & `capturePayment` API Calls + Compensation Void
 
 ```markdown
 /goal
 
 <TASK>
-Enhance `calculatePrice()` in `apps/backend/src/modules/bosta/service.ts` with package weight tier pricing calculations and improved sub-district fallback lookups.
+Implement real HTTP requests for `authorizePayment` and `capturePayment` in `apps/backend/src/modules/paymob/service.ts`, and add `voidTransaction` API call in `paymob-payment-workflow.ts` compensation step.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Delegate inspection of Bosta weight tier pricing rules or governorate mapping utils to a subagent via `invoke_subagent`.
+- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") to inspect Paymob REST API authorization, capture, and void/refund endpoint specs.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Bosta weight-tier shipping fee calculation compiles clean.
+- /goal: Execute autonomously until Paymob payment authorization, capture, and workflow void compensations compile clean.
+- /browser: Use browser to verify Paymob capture and void endpoint specifications.
+- /learn: Persist Paymob financial integration patterns to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/bosta/service.ts` and `apps/backend/src/modules/bosta/location-mapper.ts`.
+   - View `apps/backend/src/modules/paymob/service.ts` (lines 114–135) and `apps/backend/src/workflows/paymob-payment-workflow.ts`.
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/modules/bosta/service.ts`, `apps/backend/src/modules/bosta/location-mapper.ts`
-   - Update `calculatePrice()` in `service.ts` to inspect package item weights (adding +10 EGP per kg for shipments exceeding 2 kg base weight).
-   - Improve `location-mapper.ts` with secondary sub-district string matching before falling back to default governorate codes.
+   - Target files: `apps/backend/src/modules/paymob/client.ts`, `apps/backend/src/modules/paymob/service.ts`, `apps/backend/src/workflows/paymob-payment-workflow.ts`
+   - Replace stubbed `{ status: "authorized" }` returns in `authorizePayment()` and `capturePayment()` with real HTTP POST requests to Paymob capture and auth APIs.
+   - In `paymob-payment-workflow.ts` compensation step, execute live HTTP POST request to Paymob void endpoint (`/api/acceptance/void_refund/void`) when downstream workflow steps fail.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store Paymob financial workflow patterns.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Subagents invoked for Paymob capture/void REST API research.
+- [ ] `authorizePayment()` and `capturePayment()` in `service.ts` call live Paymob REST APIs.
+- [ ] `paymob-payment-workflow.ts` compensation step calls Paymob void API on failure.
+- [ ] Backend build completes with exit code 0.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 3: Dynamic Medusa Line Item Tax Resolution in ETA Tax Payload Builder
+
+```markdown
+/goal
+
+<TASK>
+Dynamically calculate ETA e-Receipt tax rates from Medusa order tax lines in `apps/backend/src/modules/eta-tax/payload-builder.ts` instead of hardcoding 14% VAT (`T1/V009`).
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Delegate Medusa Query Graph tax line inspection to a `research` subagent via `invoke_subagent`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until ETA e-Receipt tax calculations dynamically map Medusa order tax lines.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/modules/eta-tax/payload-builder.ts` (line 132).
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `apps/backend/src/modules/eta-tax/payload-builder.ts`
+   - Inspect Medusa line item `tax_lines` or order tax rate metadata.
+   - Dynamically compute item tax amounts and map tax types (`T1` for standard 14% VAT, `V001`–`V009` based on tax line rate) instead of hardcoding fixed 14% VAT (`T1/V009`) across all items.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
@@ -90,98 +138,140 @@ Enhance `calculatePrice()` in `apps/backend/src/modules/bosta/service.ts` with p
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Bosta shipping fee calculation accounts for package weight tiers (+10 EGP/kg above 2kg).
-- [ ] `location-mapper.ts` handles sub-district fallback string lookups.
+- [ ] Subagents delegated to inspect Medusa Order tax line schemas.
+- [ ] ETA payload builder dynamically maps tax types and rates from Medusa order tax lines.
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-
-### Developer Prompt 3: Add Secondary HSM Proxy Fallback Endpoint in ETA Tax Module
+### Developer Prompt 4: Fix Gemini AI Model Target Identifier & Model Execution Safety
 
 ```markdown
 /goal
 
 <TASK>
-Add secondary HSM proxy fallback endpoint configuration (`ETA_HSM_PROXY_URL_SECONDARY`) in `apps/backend/src/modules/eta-tax/hsm-signer.ts` for hardware signing high availability.
+Fix hallucinated model target identifier `"gemma-4-31b-it"` in `apps/backend/src/modules/gemini-ai/client.ts` to a valid Google AI Studio model identifier.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to delegate checking `EtaHsmSigner` retry mechanisms.
+- Use `invoke_subagent` to check Google AI Studio SDK model string specifications.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until ETA HSM signer secondary proxy fallback passes build tests.
-- /learn: Persist ETA HSM proxy fallback patterns to .gemini/rules.
+- /goal: Execute autonomously until Gemini AI client uses valid Google AI Studio model targets.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/eta-tax/hsm-signer.ts`.
+   - View `apps/backend/src/modules/gemini-ai/client.ts` (line 25).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/modules/eta-tax/hsm-signer.ts`
-   - Add `hsmProxyUrlSecondary` option reading from `process.env.ETA_HSM_PROXY_URL_SECONDARY`.
-   - In `signReceipt()`, if the primary HSM proxy times out or returns an error, automatically attempt signing via the secondary proxy URL before triggering mock/fallback signatures.
+   - Target file: `apps/backend/src/modules/gemini-ai/client.ts`
+   - Replace hallucinated model string `"gemma-4-31b-it"` on line 25 with `process.env.GEMINI_MODEL || "gemini-1.5-flash"` (or `"gemini-1.5-pro"`).
+   - Ensure model execution calls Google AI Studio SDK safely without model initialization crashes.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store ETA HSM proxy redundancy patterns.
+   - Terminate any running subagents, background processes, or dev servers before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Line 25 of `gemini-ai/client.ts` uses valid Google AI Studio model string (`gemini-1.5-flash` / `gemini-1.5-pro`).
+- [ ] Backend build completes with exit code 0.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 5: Fix ETA Subscriber Method Call & Postgres Audit ENUM Schema
+
+```markdown
+/goal
+
+<TASK>
+Fix method call runtime crash on line 85 of `order-placed-eta.ts` and update Postgres ENUM schema in `models/eta-audit.ts` to include `"FAILED_DLQ"`.
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to inspect `EtaTaxModuleService` exported methods and `EtaReceiptAudit` entity annotations.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until ETA subscriber method call and audit ENUM schema pass build checks.
+- /learn: Persist Medusa entity ENUM schema rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/subscribers/order-placed-eta.ts` (lines 85 & 137) and `apps/backend/src/modules/eta-tax/models/eta-audit.ts`.
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `apps/backend/src/subscribers/order-placed-eta.ts`, `apps/backend/src/modules/eta-tax/models/eta-audit.ts`
+   - **Line 85**: Change `etaTaxModuleService.submitReceipt(...)` to `etaTaxModuleService.submitAndAuditReceipt(...)` to eliminate runtime `TypeError: submitReceipt is not a function` crash.
+   - **`models/eta-audit.ts`**: Add `"FAILED_DLQ"` to `EtaAuditStatus` ENUM definition so database writes on line 137 do not violate Postgres ENUM constraints.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store Medusa v2 entity ENUM rules.
    - Terminate any running subagents or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `EtaHsmSigner` supports secondary HSM proxy URL fallback (`ETA_HSM_PROXY_URL_SECONDARY`).
-- [ ] Primary proxy timeout automatically retries secondary HSM proxy.
+- [ ] Line 85 of `order-placed-eta.ts` calls `submitAndAuditReceipt`.
+- [ ] `EtaAuditStatus` ENUM in `models/eta-audit.ts` includes `"FAILED_DLQ"`.
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-
-### Developer Prompt 4: Add Exponential Retry Backoff & Telemetry to Gemini AI BullMQ Worker
+### Developer Prompt 6: Replace Runtime `process.env` Global Mutation in Subscription Listener
 
 ```markdown
 /goal
 
 <TASK>
-Add exponential rate-limit retry backoff and token usage logging to `apps/backend/src/jobs/ai-copywriter-worker.ts`.
+Replace global `process.env.TENANT_STATUS` mutation in `apps/backend/src/subscribers/subscription-listener.ts` with scoped tenant database status flags.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Delegate BullMQ worker configuration research to a subagent via `invoke_subagent`.
+- Spawn a `research` subagent via `invoke_subagent` to research per-tenant context isolation patterns in Medusa v2 multi-tenancy.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Gemini AI BullMQ worker passes build verification.
+- /goal: Execute autonomously until subscription listener tenant state isolation compiles clean.
+- /learn: Persist multi-tenant state isolation rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/jobs/ai-copywriter-worker.ts` and `apps/backend/src/modules/gemini-ai/service.ts`.
+   - View `apps/backend/src/subscribers/subscription-listener.ts` (line 34).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/jobs/ai-copywriter-worker.ts`
-   - Configure BullMQ worker job options with exponential backoff: `{ attempts: 5, backoff: { type: 'exponential', delay: 2000 } }`.
-   - Add token usage telemetry logging (`[Gemini AI Telemetry] Prompt Tokens, Completion Tokens`) upon successful generation.
+   - Target file: `apps/backend/src/subscribers/subscription-listener.ts`
+   - Remove `process.env.TENANT_STATUS = "SOFT_SUSPENDED"` on line 34 (which globally suspends all tenants running on the Node process).
+   - Update tenant status in the tenant database record or scoped Redis tenant metadata store instead of mutating Node process environment variables at runtime.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store multi-tenant isolation rules.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] BullMQ AI copywriter worker configures exponential backoff retry options (5 attempts).
-- [ ] Token usage telemetry logs to console on job completion.
+- [ ] Line 34 of `subscription-listener.ts` does NOT mutate `process.env.TENANT_STATUS`.
+- [ ] Tenant suspension flags persist to database/Redis scoped tenant metadata.
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
@@ -189,77 +279,120 @@ Add exponential rate-limit retry backoff and token usage logging to `apps/backen
 
 ---
 
-### Developer Prompt 5: Refactor ETA Subscriber Retries to BullMQ Delayed Jobs & Add DLQ Alert Webhooks
+## Part 2: Storefront Performance & Architectural Fixes (Prompts 7–9)
+
+---
+### Developer Prompt 7: Fix Storefront Layout Font Duplication, `metadataBase`, & LCP/CLS Optimization
 
 ```markdown
 /goal
 
 <TASK>
-Refactor synchronous retry loops in `apps/backend/src/subscribers/order-placed-eta.ts` to BullMQ delayed jobs and dispatch DLQ alert webhooks.
+Remove duplicate Google Font `<link>` imports in `apps/storefront/src/app/layout.tsx`, use `next/font/google`, and add `metadataBase`.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to research BullMQ delayed job schedules and alert webhook patterns.
+- Delegate inspection of Next.js 15 layout font configuration to a subagent via `invoke_subagent`.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until ETA subscriber delayed jobs pass build verification.
-- /learn: Persist Dead-Letter Queue alert webhook patterns to .gemini/rules.
+- /goal: Execute autonomously until storefront layout font optimization and metadata pass build checks.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/subscribers/order-placed-eta.ts`.
+   - View `apps/storefront/src/app/layout.tsx` (lines 41–44).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/subscribers/order-placed-eta.ts`
-   - Replace in-memory delay loops with BullMQ delayed job processing (`{ delay: 5000, attempts: 3 }`).
-   - On final DLQ failure (`FAILED_DLQ`), dispatch an alert HTTP POST payload to `process.env.ALERT_WEBHOOK_URL` (Slack/Email alert) notifying admins of failed ETA tax submission.
+   - Target file: `apps/storefront/src/app/layout.tsx`
+   - Remove duplicate Google Font `<link rel="stylesheet">` tags on lines 41–44. Keep `next/font/google` font loader (`Cairo` / `Inter`) to prevent layout shift (CLS) and LCP render blocking.
+   - Add `metadataBase: new URL(process.env.NEXT_PUBLIC_STORE_URL || "https://egyptbrand.com")` in `export const metadata`.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
+   - Run storefront build verification: `cd apps/storefront && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store DLQ alert webhook patterns.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
+   - Terminate any running subagents, background dev servers (e.g. `next dev`) before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `order-placed-eta.ts` uses BullMQ delayed jobs instead of synchronous in-memory sleep loops.
-- [ ] `FAILED_DLQ` status triggers alert notification payload to `ALERT_WEBHOOK_URL`.
-- [ ] Backend build completes with exit code 0.
+- [ ] `layout.tsx` contains zero duplicate `<link>` font tags; uses `next/font/google`.
+- [ ] Metadata includes valid `metadataBase` configuration.
+- [ ] Storefront build completes with exit code 0.
 - [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-
-### Developer Prompt 6: Add Paymob Iframe Modal Loading States & Arabic Dialogs in Storefront
+### Developer Prompt 8: Server-Side Order & Bosta Tracking Creation in Storefront Checkout
 
 ```markdown
 /goal
 
 <TASK>
-Add localized Arabic loading spinners, iframe modal containers, and mobile wallet OTP prompts in storefront checkout.
+Move order ID and Bosta tracking string generation from client-side state in `checkout-view.tsx` to Medusa v2 server-side workflow endpoints.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Delegate storefront checkout component inspection to a subagent via `invoke_subagent`.
+- Use `invoke_subagent` to inspect Medusa JS SDK server-side checkout complete endpoints (`sdk.store.carts.complete()`).
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Paymob checkout modal component builds cleanly.
+- /goal: Execute autonomously until checkout complete workflow runs server-side with Medusa SDK.
+- /learn: Persist Medusa v2 checkout completion patterns to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/storefront/src/app/[countryCode]/checkout/page.tsx`.
+   - View `apps/storefront/src/modules/checkout/components/checkout-view.tsx` (lines 31–43).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/src/modules/checkout/components/paymob-modal.tsx`, `apps/storefront/src/app/[countryCode]/checkout/page.tsx`
-   - Create `PaymobModal` component rendering accessible dialog with Arabic loading spinner (`جاري تجهيز بوابة الدفع...`), Paymob iframe container, and mobile wallet OTP prompt.
-   - Embed in storefront checkout page.
+   - Target file: `apps/storefront/src/modules/checkout/components/checkout-view.tsx`
+   - Remove client-side order ID generation (`"ORD_" + Math.random()`) and client Bosta tracking strings.
+   - Complete cart submission via server-side Medusa API endpoint (`sdk.store.carts.complete()`), receiving canonical order and fulfillment tracking data from the backend.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run storefront build verification: `cd apps/storefront && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store Medusa checkout complete rules.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] `checkout-view.tsx` contains zero client-side `Math.random()` order ID or tracking string generation.
+- [ ] Order completion executes via server-side Medusa SDK workflow endpoints.
+- [ ] Storefront build completes with exit code 0.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 9: Cart Context Error Handling & API Failure Resilience
+
+```markdown
+/goal
+
+<TASK>
+Remove silent `.catch(() => {})` error swallowing in `apps/storefront/src/lib/context/cart-context.tsx` and implement error rollback toasts.
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Delegate Cart Context state management inspection to a subagent via `invoke_subagent`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Cart Context handles API network failures cleanly.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/storefront/src/lib/context/cart-context.tsx` (lines 121–131).
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `apps/storefront/src/lib/context/cart-context.tsx`
+   - Remove empty `.catch(() => {})` handlers on lines 121–131.
+   - On Medusa SDK API failure: Roll back optimistic UI cart items to previous state and trigger error toast notification (`حدث خطأ أثناء تحديث السلة`).
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run storefront build verification: `cd apps/storefront && npm run build`
@@ -269,7 +402,8 @@ Add localized Arabic loading spinners, iframe modal containers, and mobile walle
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `PaymobModal` component provides localized Egyptian Arabic loading states and Paymob iframe container.
+- [ ] Lines 121–131 of `cart-context.tsx` do NOT contain silent `.catch(() => {})` blocks.
+- [ ] Cart Context rolls back optimistic state and notifies user on network/API failure.
 - [ ] Storefront build completes with exit code 0.
 - [ ] All subagents, background tasks, and dev servers are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
@@ -277,41 +411,89 @@ Add localized Arabic loading spinners, iframe modal containers, and mobile walle
 
 ---
 
-### Developer Prompt 7: Add Redis Sentinel High-Availability Support in Docker Infrastructure
+## Part 3: Infrastructure & Security Hardening Fixes (Prompts 10–11)
+
+---
+### Developer Prompt 10: Secure Tenant Provisioning Secrets with Cryptographic Random Tokens
 
 ```markdown
 /goal
 
 <TASK>
-Add Redis Sentinel / Cluster configuration options in `infrastructure/docker/docker-compose.tenant.yml` for multi-tenant high availability.
+Replace predictable epoch timestamp password generation (`date +%s`) in `infrastructure/scripts/provision-tenant.sh` with `openssl rand -base64 32`.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` if Docker Compose Redis Sentinel service configuration requires research.
+- Use `invoke_subagent` if bash token generation syntax verification is required.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Docker Compose template validates with Redis Sentinel options.
+- /goal: Execute autonomously until tenant provisioning script generates cryptographically secure secrets.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `infrastructure/docker/docker-compose.tenant.yml`.
+   - View `infrastructure/scripts/provision-tenant.sh` (lines 53–59).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `infrastructure/docker/docker-compose.tenant.yml`
-   - Add commented/configurable Redis Sentinel high-availability service definitions (`redis-master`, `redis-replica`, `redis-sentinel`).
+   - Target file: `infrastructure/scripts/provision-tenant.sh`
+   - Change lines 53–59 from `pass_${TENANT_ID}_$(date +%s)` to cryptographically secure secret generation:
+     `openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32` for DB, Redis, and JWT secrets.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run bash syntax check: `bash -n infrastructure/scripts/provision-tenant.sh`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running subagents or shell tasks before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Lines 53–59 of `provision-tenant.sh` use `openssl rand` for secret generation.
+- [ ] Script passes `bash -n` syntax check cleanly.
+- [ ] All subagents and background tasks are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 11: Isolate Host Interfaces in Tenant Docker Compose & Input Sanitization in Caddy Router
+
+```markdown
+/goal
+
+<TASK>
+Remove host port exposure (`5432`, `6379`) in `docker-compose.tenant.yml` and sanitize custom domain inputs in `caddy-domain-router.sh`.
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Delegate Docker Compose network isolation and bash domain regex sanitization to a subagent via `invoke_subagent`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Docker Compose template and Caddy domain router pass security validation.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `infrastructure/docker/docker-compose.tenant.yml` (lines 12–13) and `infrastructure/scripts/caddy-domain-router.sh` (line 32).
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `infrastructure/docker/docker-compose.tenant.yml`, `infrastructure/scripts/caddy-domain-router.sh`
+   - **`docker-compose.tenant.yml`**: Remove public host port mappings (`5432:5432`, `6379:6379`) to keep PostgreSQL and Redis isolated inside the internal Docker bridge network (`127.0.0.1:5432` fallback if required).
+   - **`caddy-domain-router.sh`**: Add regex domain validation (`[[ "$CUSTOM_DOMAIN" =~ ^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]`) on line 32 to reject malformed domain strings and prevent JSON/shell injection attacks.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run Docker compose config validation: `docker compose -f infrastructure/docker/docker-compose.tenant.yml config`
+   - Run bash syntax check: `bash -n infrastructure/scripts/caddy-domain-router.sh`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
    - Terminate any active subagents or background tasks before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] `docker-compose.tenant.yml` includes Redis Sentinel high-availability service options.
-- [ ] Docker Compose config passes validation cleanly.
+- [ ] Subagents delegated for Docker security & regex sanitization checks.
+- [ ] PostgreSQL (`5432`) and Redis (`6379`) host ports are unmapped from public host interfaces.
+- [ ] `caddy-domain-router.sh` validates custom domain string format before payload construction.
+- [ ] Docker Compose config and bash script pass validation tests.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
