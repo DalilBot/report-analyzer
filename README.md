@@ -1,321 +1,147 @@
-# Master Developer Prompt Pack: 8.1 Rating Report Codebase Fixes (`PROMPT_SEQUENCE_81_RATING_FIXES.md`)
+# Final Production Polish Developer Prompt Pack (`PROMPT_SEQUENCE_FINAL_ENHANCEMENTS.md`)
 
-This prompt pack contains **7 hyper-focused developer prompts** engineered for **Google Antigravity Agentic IDE** to resolve the exact defects, workflow bugs, subscriber timing issues, and storefront layout flaws identified in the 8.1/10 rating report. Zero older problems are included.
+This prompt pack contains **the final 3 developer prompts** to implement the next-stage CI/CD, OpenTelemetry metrics, and Caddyfile backup infrastructure enhancements identified in the 9.8/10 audit report.
 
 > [!IMPORTANT]
-> **Subagent Directive**: Every prompt explicitly instructs the receiving Antigravity agent to invoke subagents (`invoke_subagent`) for codebase research, file inspections, or parallel sub-tasks to maintain clean context and maximize execution speed.
+> **Subagent Directive**: Send these 3 prompts sequentially (Prompt 1 through Prompt 3) to your developer Antigravity instance. Every prompt explicitly instructs the agent to delegate research or sub-tasks to subagents (`invoke_subagent`) to maintain clean context and maximize execution speed.
 
 ---
 
-## Part 1: Backend Modules & Workflows Fixes (Prompts 1–4)
-
----
-### Developer Prompt 1: Paymob `getPaymentStatus` Live REST API Query
+### Developer Prompt 1: GitHub Actions CI/CD Integration Test Pipeline (`.github/workflows/ci.yml`)
 
 ```markdown
 /goal
 
 <TASK>
-Replace hardcoded `{ status: "authorized" }` in `getPaymentStatus()` (lines 260–266) in `apps/backend/src/modules/paymob/service.ts` with a live HTTP query to Paymob transaction API.
+Create a GitHub Actions CI pipeline `.github/workflows/ci.yml` that provisions PostgreSQL 15 & Redis 7 containers, builds the monorepo, and executes automated integration tests.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") to inspect Paymob GET transaction status endpoint documentation.
+- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") to inspect monorepo build scripts across `package.json`, `apps/backend`, and `apps/storefront`.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Paymob getPaymentStatus queries live Paymob REST API.
-- /browser: Verify Paymob GET transaction status API endpoint specs.
-- /learn: Persist Paymob transaction status query patterns to .gemini/rules.
+- /goal: Execute autonomously until GitHub Actions workflow file passes YAML syntax validation.
+- /learn: Persist GitHub Actions CI/CD pipeline configuration patterns to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/paymob/service.ts` (lines 260–266) and `apps/backend/src/modules/paymob/client.ts`.
+   - View root `package.json`, `apps/backend/package.json`, and `apps/storefront/package.json`.
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/modules/paymob/client.ts`, `apps/backend/src/modules/paymob/service.ts`
-   - Implement `getPaymobTransactionStatus(authToken, transactionId)` in `client.ts` issuing `GET https://accept.paymob.com/api/acceptance/transactions/{id}`.
-   - Update `getPaymentStatus()` in `service.ts` (lines 260–266) to call `getPaymobTransactionStatus()` and map Paymob transaction status (`success`, `pending`, `refunded`, `voided`) to Medusa payment status (`captured`, `authorized`, `canceled`, `error`).
+   - Target file: `.github/workflows/ci.yml`
+   - Configure a GitHub Actions workflow triggered on `push` and `pull_request` to `main`:
+     - Service Containers: `postgres:15-alpine` (database `medusa-db`) and `redis:7-alpine`.
+     - Job Steps: Node.js 20 setup, dependency installation (`npm ci`), workspace build (`npm run build`), TypeScript typecheck (`npx tsc --noEmit`), and test suite execution (`npm run test`).
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
+   - Verify YAML file creation: Check `.github/workflows/ci.yml` structure.
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store Paymob payment status mapping rules.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
+   - Execute `/learn` to store CI/CD pipeline rules.
+   - Terminate any running subagents or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for Paymob transaction status API research.
-- [ ] `getPaymentStatus()` in `paymob/service.ts` queries live Paymob REST API.
-- [ ] Backend build completes with exit code 0.
-- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 2: Fix Transaction ID String Bug in Paymob Payment Workflow Rollback
-
-```markdown
-/goal
-
-<TASK>
-Fix transaction ID bug on line 36 of `apps/backend/src/workflows/paymob-payment-workflow.ts` so step compensation passes the live Paymob transaction ID.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect `initiatePaymobPaymentStep` compensation data payload structure.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Paymob workflow rollback step passes real transaction ID to void API.
-- /learn: Persist Medusa workflow compensation state passing rules to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/workflows/paymob-payment-workflow.ts` (line 36).
-
-2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/workflows/paymob-payment-workflow.ts`
-   - Update `initiatePaymobPaymentStep` response to include real `paymob_transaction_id` in `StepResponse(result, { transactionId: result.transaction_id })`.
-   - On workflow step rollback compensation, pass `compensationData.transactionId` to `voidPaymobTransaction` so void calls target actual Paymob payment transactions.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store workflow compensation state passing rules.
-   - Terminate any running subagents, background processes, or dev servers before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents invoked for workflow step response inspection.
-- [ ] `paymob-payment-workflow.ts` compensation step passes live Paymob transaction ID to `voidPaymobTransaction`.
-- [ ] Backend build completes with exit code 0.
-- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 3: Refactor ETA Subscriber DLQ Alert Timing to Exhaustion Only
-
-```markdown
-/goal
-
-<TASK>
-Refactor `apps/backend/src/subscribers/order-placed-eta.ts` (lines 141–173) so DLQ alert webhooks trigger only after all background retries are exhausted.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Delegate ETA subscriber retry state inspection to a `research` subagent via `invoke_subagent`.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until ETA subscriber DLQ alert webhooks fire only on final retry exhaustion.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/subscribers/order-placed-eta.ts` (lines 141–173).
-
-2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/subscribers/order-placed-eta.ts`
-   - Remove premature DLQ alert webhook dispatch from the initial failure handler.
-   - Trigger DLQ alert webhook ONLY inside the final retry error handler when `attempts >= MAX_RETRIES` (3 retries exhausted).
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for subscriber retry flow inspection.
-- [ ] DLQ alert webhook dispatches ONLY after all 3 retries are exhausted (`attempts >= MAX_RETRIES`).
-- [ ] Backend build completes with exit code 0.
-- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 4: Replace In-Memory Array Queue with Redis BullMQ Queue Worker
-
-```markdown
-/goal
-
-<TASK>
-Delete in-memory array queue in `apps/backend/src/jobs/background-queue.ts` (lines 14–15) and configure native Redis BullMQ background workers.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to research BullMQ Queue and Worker setup in Medusa v2.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until background job processing uses persistent Redis BullMQ queue workers.
-- /learn: Persist Redis BullMQ background worker patterns to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/jobs/background-queue.ts` (lines 14–15).
-
-2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/jobs/background-queue.ts`
-   - Remove `pendingJobsQueue = []` in-memory array.
-   - Instantiate BullMQ `Queue` (`background_jobs_queue`) and `Worker` connected to Redis (`process.env.REDIS_URL`), ensuring background jobs persist across container restarts.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store BullMQ worker patterns.
-   - Terminate any running subagents, background processes, or dev servers before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for BullMQ queue worker patterns research.
-- [ ] `background-queue.ts` contains zero in-memory `pendingJobsQueue` arrays; uses Redis BullMQ Queue/Worker.
-- [ ] Backend build completes with exit code 0.
-- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-
-## Part 2: Storefront & Infrastructure Optimizations (Prompts 5–7)
-
----
-### Developer Prompt 5: Dynamic Root HTML Direction & Language in Storefront Layout
-
-```markdown
-/goal
-
-<TASK>
-Update line 33 of `apps/storefront/src/app/layout.tsx` to dynamically set root HTML `lang` and `dir` attributes based on active route locale parameter.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Delegate Next.js 15 App Router dynamic HTML layout inspection to a subagent via `invoke_subagent`.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until storefront layout dynamically sets HTML lang and dir attributes.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/storefront/src/app/layout.tsx` (line 33) and `apps/storefront/src/app/[countryCode]/layout.tsx`.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/src/app/layout.tsx`, `apps/storefront/src/app/[countryCode]/layout.tsx`
-   - Remove hardcoded `lang="ar" dir="rtl"` on line 33 of `layout.tsx`.
-   - Compute dynamic HTML direction (`dir={locale === 'ar' ? 'rtl' : 'ltr'}`) and language (`lang={locale}`) based on current route params, ensuring English language views align correctly.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run storefront build verification: `cd apps/storefront && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running subagents, background dev servers (e.g. `next dev`) before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for dynamic layout prop inspection.
-- [ ] Line 33 of `layout.tsx` renders dynamic `dir` and `lang` props based on active locale.
-- [ ] Storefront build completes with exit code 0.
-- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 6: Enable Next.js Standalone Output Mode & Optimize Storefront Dockerfile
-
-```markdown
-/goal
-
-<TASK>
-Configure `output: 'standalone'` in `apps/storefront/next.config.ts` and update `infrastructure/docker/Dockerfile.storefront` for lightweight production builds.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to research Next.js standalone output deployment patterns in Docker.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Next.js storefront builds in standalone mode cleanly.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/storefront/next.config.ts` and `infrastructure/docker/Dockerfile.storefront`.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/next.config.ts`, `infrastructure/docker/Dockerfile.storefront`
-   - **`next.config.ts`**: Add `output: "standalone"` to Next.js configuration object.
-   - **`Dockerfile.storefront`**: Update runner stage to copy `.next/standalone` and `.next/static` assets, executing `CMD ["node", "server.js"]` for optimal container image size and memory overhead.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run storefront build verification: `cd apps/storefront && npm run build`
-   - Run Docker compose config validation: `docker compose -f infrastructure/docker/docker-compose.tenant.yml config`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any active subagents or background tasks before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] `next.config.ts` includes `output: "standalone"`.
-- [ ] `Dockerfile.storefront` copies standalone server build assets and executes `node server.js`.
-- [ ] Storefront build and Docker Compose config pass validation.
+- [ ] Subagents delegated for monorepo package script inspection.
+- [ ] `.github/workflows/ci.yml` includes PostgreSQL 15 and Redis 7 service containers.
+- [ ] Workflow steps execute workspace build, TypeScript check, and test commands.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 7: Type-Safe Container Injection in Bosta Fulfillment Service
+
+### Developer Prompt 2: OpenTelemetry & Prometheus Metrics Instrumentation (`apps/backend/src/instrumentation.ts`)
 
 ```markdown
 /goal
 
 <TASK>
-Replace manual `(this.container_?.caching as any)` resolution in `apps/backend/src/modules/bosta/service.ts` with typed Medusa v2 container injection.
+Implement OpenTelemetry SDK metrics exporter in `apps/backend/src/instrumentation.ts` tracking Paymob payment gateway API latencies, Bosta rate cache hits/misses, and ETA tax submission DLQ error counts.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect `@medusajs/framework/types` `ICacheService` injection patterns.
+- Use `invoke_subagent` to research OpenTelemetry Node.js SDK instrumentation patterns for Medusa v2.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Bosta service uses type-safe ICacheService container injection.
+- /goal: Execute autonomously until OpenTelemetry metrics instrumentation compiles cleanly.
+- /learn: Persist OpenTelemetry telemetry patterns to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/bosta/service.ts`.
+   - View `apps/backend/src/instrumentation.ts` (or create if missing) and inspect OpenTelemetry metrics imports (`@opentelemetry/sdk-metrics`, `@opentelemetry/api`).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/modules/bosta/service.ts`
-   - Inject `caching` container dependency via constructor or container resolution using typed `ICacheService` interface from `@medusajs/framework/types`.
-   - Remove `(this.container_?.caching as any)` untyped type assertion.
+   - Target file: `apps/backend/src/instrumentation.ts`
+   - Register OpenTelemetry Meter Provider exporting Prometheus/OTLP metrics.
+   - Create custom counters and histograms:
+     - `paymob_request_duration_seconds` (Histogram tracking Paymob API latency).
+     - `bosta_rate_cache_hits_total` / `bosta_rate_cache_misses_total` (Counters tracking shipping cache performance).
+     - `eta_tax_dlq_errors_total` (Counter tracking failed ETA tax submissions).
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running subagents or processes before completing turn.
+   - Execute `/learn` to store OpenTelemetry metrics rules.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for `ICacheService` interface inspection.
-- [ ] `bosta/service.ts` uses type-safe `ICacheService` injection without untyped `any` assertions.
+- [ ] Subagents delegated for OpenTelemetry SDK pattern research.
+- [ ] `apps/backend/src/instrumentation.ts` exports Prometheus/OTLP metrics for Paymob, Bosta, and ETA Tax.
 - [ ] Backend build completes with exit code 0.
+- [ ] All subagents, background tasks, and dev servers are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+
+### Developer Prompt 3: Automated Caddyfile & Dynamic Tenant Domain Backup Cron Script (`infrastructure/scripts/backup-caddyfile.sh`)
+
+```markdown
+/goal
+
+<TASK>
+Create automated backup script `infrastructure/scripts/backup-caddyfile.sh` backing up Caddy configurations to timestamped tar.gz archives with automated rotation pruning.
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Delegate bash tar compression and pruning logic verification to a subagent via `invoke_subagent`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Caddyfile backup script passes bash syntax check.
+- /learn: Persist backup cron script patterns to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `infrastructure/scripts/caddy-domain-router.sh` and inspect Caddy config directory paths (`/etc/caddy/Caddyfile`, `/etc/caddy/tenants/`).
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `infrastructure/scripts/backup-caddyfile.sh`
+   - Create bash script that archives `/etc/caddy/Caddyfile` and `/etc/caddy/tenants/*.caddy` into `/var/backups/caddy/caddy_backup_$(date +%Y%m%d_%H%M%S).tar.gz`.
+   - Include automated rotation pruning retaining the last 30 daily backup archives (`find /var/backups/caddy -name "*.tar.gz" -mtime +30 -delete`).
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run bash syntax check: `bash -n infrastructure/scripts/backup-caddyfile.sh`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store backup script rules.
+   - Terminate any running subagents or shell tasks before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Subagents delegated for bash syntax check.
+- [ ] `infrastructure/scripts/backup-caddyfile.sh` creates timestamped tar.gz backups of Caddy configs.
+- [ ] Includes 30-day rotation pruning logic.
+- [ ] Script passes `bash -n` syntax check cleanly.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
