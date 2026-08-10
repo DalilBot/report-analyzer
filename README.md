@@ -1,58 +1,108 @@
-# Dedicated 8.2 Report Remediation Prompt Pack (`PROMPT_SEQUENCE_82_FINAL_FIXES.md`)
+# Dedicated 8.5 Report Remediation Prompt Pack — Single-Tenant (`PROMPT_SEQUENCE_85_SINGLE_TENANT_FIXES.md`)
 
-This prompt pack contains **6 targeted developer prompts** engineered for **Google Antigravity Agentic IDE** to resolve the exact new defects identified in the 8.2/10 evaluation report: hardcoded test API key, CI/CD failure masking, ineffective retry backoff, ETA workflow DI token cache defeat, missing fetch timeouts, missing Bosta return fulfillment methods, worker lifecycle issues, and OpenTelemetry auto-instrumentation. Zero older problems are included.
+This prompt pack contains **5 targeted developer prompts** engineered for **Google Antigravity Agentic IDE** to resolve the exact new defects identified in the 8.5/10 evaluation report: Paymob piastre heuristic undercharge bug, Paymob void Transaction ID fix, Bosta baseUrl/express-rate/Port Fuad bugs, ETA mock submission fallback & subscriber workflow bypass, and single-tenant infrastructure simplification. Zero older problems are included.
 
 > [!IMPORTANT]
-> **Subagent Directive**: Send these 6 prompts sequentially (Prompt 1 through Prompt 6) to your developer Antigravity instance. Every prompt explicitly instructs the agent to delegate research or sub-tasks to subagents (`invoke_subagent`) to maintain clean context and maximize execution speed.
+> **Single-Tenant Architecture**: This project uses **single-tenant** infrastructure. All multi-tenant provisioning, tenant isolation, and dynamic Caddy per-tenant routing complexity should be simplified to a clean single-tenant Docker Compose setup.
+
+> [!IMPORTANT]
+> **Subagent Directive**: Send these 5 prompts sequentially (Prompt 1 through Prompt 5) to your developer Antigravity instance. Every prompt explicitly instructs the agent to delegate research or sub-tasks to subagents (`invoke_subagent`).
 
 ---
 
-## Part 1: Security & CI/CD Pipeline (Prompt 1)
+## Part 1: Payment & Fulfillment Logic Fixes (Prompts 1–2)
 
 ---
-### Developer Prompt 1: Remove Hardcoded API Key from `test-gemma.ts` & Fix CI/CD `|| true` Failure Masking in `ci.yml`
+### Developer Prompt 1: Fix Paymob Piastre Conversion Heuristic Undercharge Bug & Void Transaction ID in Workflow Compensation
 
 ```markdown
 /goal
 
 <TASK>
-Remove the hardcoded plaintext API key from `apps/backend/scripts/test-gemma.ts:L6` and fix CI/CD pipeline steps in `.github/workflows/ci.yml` that swallow failures with `|| true`.
+Remove the flawed `egpAmount > 5000` piastre heuristic in `paymob/client.ts` and fix the void compensation step in `paymob-payment-workflow.ts` to pass a live Transaction ID instead of an Order ID.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") to search the entire monorepo for any other hardcoded API keys, secrets, or `|| true` patterns that mask failures.
+- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") to inspect the Paymob piastre conversion function and the payment workflow void compensation step parameters.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until all hardcoded secrets are removed and CI pipeline correctly fails on typecheck/test errors.
-- /learn: Persist CI/CD pipeline integrity and secret hygiene rules to .gemini/rules.
+- /goal: Execute autonomously until Paymob piastre conversion is deterministic and void compensation passes live Transaction IDs.
+- /learn: Persist Paymob currency conversion rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/scripts/test-gemma.ts` (line 6).
-   - View `.github/workflows/ci.yml` (lines 53 and 65).
-   - Search entire monorepo for other hardcoded API keys or tokens using `grep_search` for patterns like `AQ.Ab`, `AIza`, `sk-`, `Bearer ey`.
+   - View `apps/backend/src/modules/paymob/client.ts` (lines 135–143).
+   - View `apps/backend/src/workflows/paymob-payment-workflow.ts` (line 71).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/scripts/test-gemma.ts`, `.github/workflows/ci.yml`
-   - **`test-gemma.ts:L6`**: Replace the hardcoded plaintext API key (`AQ.Ab8RN6KHs...`) with `process.env.GEMINI_API_KEY`. Add a guard that throws if the environment variable is missing.
-   - **`ci.yml:L53`**: Remove `|| true` from the TypeScript typecheck step so the pipeline correctly fails when `tsc --noEmit` reports errors.
-   - **`ci.yml:L65`**: Remove `|| true` from the unit test step so the pipeline correctly fails when tests fail.
+   - Target files: `apps/backend/src/modules/paymob/client.ts`, `apps/backend/src/workflows/paymob-payment-workflow.ts`
+   - **`client.ts:L135-143` — Remove Heuristic**: Delete the `if (Number.isInteger(egpAmount) && egpAmount > 5000) return egpAmount;` heuristic entirely. This heuristic causes orders of 5,001 EGP to be interpreted as already in piastres (50.01 EGP), resulting in a 100x undercharge. Instead, always perform `Math.round(egpAmount * 100)` deterministically since Medusa always passes amounts in major currency units (EGP). Add a clear JSDoc comment explaining the conversion contract.
+   - **`paymob-payment-workflow.ts:L71` — Fix Void ID**: Update the compensation step to pass the live Paymob `transactionId` (from the payment initiation step response) to `voidPaymobTransaction()` instead of `paymobOrderId`. The Paymob void API requires a Transaction ID, not an Order ID.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Validate CI workflow YAML syntax.
+   - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store CI pipeline integrity rules.
+   - Execute `/learn` to store Paymob currency conversion rules.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for monorepo-wide secret scan.
-- [ ] Zero hardcoded API keys in `test-gemma.ts` or anywhere in the monorepo.
-- [ ] `ci.yml` typecheck and test steps fail the pipeline on errors (no `|| true`).
+- [ ] Subagents delegated for Paymob conversion and workflow inspection.
+- [ ] Zero heuristic-based piastre conversion logic in `client.ts` — deterministic `Math.round(egpAmount * 100)` only.
+- [ ] Void compensation step passes live `transactionId` to Paymob void API.
+- [ ] Backend build completes with exit code 0.
+- [ ] All subagents and background tasks are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 2: Fix Bosta `baseUrl` Passthrough, Express Rate Multiplier, & Port Fuad Governorate Mapping
+
+```markdown
+/goal
+
+<TASK>
+Pass `options.baseUrl` to `BostaClient` constructor in `bosta/service.ts`, differentiate `bosta-express` rates from `bosta-standard`, and fix Port Fuad ("بورفؤاد") governorate assignment from Alexandria (EG-03) to Port Said (EG-12).
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Delegate Bosta API base URL configuration, shipping option rate differentiation, and Egyptian governorate geographic mapping to a subagent via `invoke_subagent`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until Bosta client uses configured base URL, express rates differ from standard, and Port Fuad maps to Port Said.
+- /learn: Persist Bosta service configuration and governorate mapping rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/modules/bosta/service.ts` (lines 82–83 and rate calculation section).
+   - View `apps/backend/src/modules/bosta/location-mapper.ts` (search for "بورفؤاد" or "Port Fuad").
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `apps/backend/src/modules/bosta/service.ts`, `apps/backend/src/modules/bosta/location-mapper.ts`
+   - **`service.ts:L82-83` — Pass Base URL**: Forward `this.options_.baseUrl` (or `process.env.BOSTA_API_BASE_URL`) to the `BostaClient` constructor so the client targets the correct Bosta API environment (staging vs production).
+   - **Express Rate Multiplier**: Apply a 1.5x or configurable multiplier to `bosta-express` shipping option rates so express and standard rates are differentiated. Currently both options return identical pricing.
+   - **`location-mapper.ts` — Port Fuad Fix**: Move "بورفؤاد" (Port Fuad) from the Alexandria (EG-03) sub-district list to Port Said (EG-12) where it geographically belongs.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store Bosta service configuration rules.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Subagents delegated for Bosta API configuration and governorate research.
+- [ ] `BostaClient` receives `baseUrl` from service options.
+- [ ] `bosta-express` applies rate multiplier differentiating from `bosta-standard`.
+- [ ] Port Fuad ("بورفؤاد") mapped to Port Said (EG-12) instead of Alexandria (EG-03).
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
@@ -60,52 +110,51 @@ Remove the hardcoded plaintext API key from `apps/backend/scripts/test-gemma.ts:
 
 ---
 
-## Part 2: Background Queue Retry Backoff & Worker Lifecycle (Prompt 2)
+## Part 2: ETA Tax Compliance Fix (Prompt 3)
 
 ---
-### Developer Prompt 2: Fix Background Queue Retry Backoff Delay, Add SIGINT/SIGTERM Graceful Shutdown, & Control Worker Auto-Start
+### Developer Prompt 3: Throw on Missing ETA Credentials in Production & Route Subscriber Through `submitEtaTaxReceiptWorkflow`
 
 ```markdown
 /goal
 
 <TASK>
-Add actual `await` delay before re-queuing failed jobs in `background-queue.ts`, implement SIGINT/SIGTERM graceful shutdown for the worker loop, and prevent auto-start on module import.
+Replace mock success fallback in `eta-tax/client.ts` with a production exception when ETA credentials are missing, and update `order-placed-eta.ts` to invoke the `submitEtaTaxReceiptWorkflow` instead of calling service methods directly.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect Redis queue worker lifecycle management patterns and Node.js process signal handling.
+- Use `invoke_subagent` to inspect ETA client credential guards and the subscriber-to-workflow invocation pattern.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until background queue retry backoff actually delays re-queuing and worker shuts down gracefully on SIGINT/SIGTERM.
-- /learn: Persist background worker lifecycle management rules to .gemini/rules.
+- /goal: Execute autonomously until ETA client throws on missing production credentials and the subscriber routes through the defined workflow.
+- /learn: Persist ETA credential enforcement and subscriber-workflow routing rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/jobs/background-queue.ts` (lines 121, 137–139, 154).
-   - View `apps/backend/src/jobs/ai-copywriter-worker.ts` (line 121).
+   - View `apps/backend/src/modules/eta-tax/client.ts` (lines 142–152).
+   - View `apps/backend/src/subscribers/order-placed-eta.ts` (lines 210–240).
+   - View `apps/backend/src/workflows/eta-tax-workflow.ts`.
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/jobs/background-queue.ts`, `apps/backend/src/jobs/ai-copywriter-worker.ts`
-   - **Effective Retry Backoff** (`background-queue.ts:L137-139`): Before re-queuing a failed job via `rpush`, add `await new Promise(resolve => setTimeout(resolve, backoffDelayMs))` using the computed exponential backoff delay so jobs actually wait before retry instead of retrying instantly.
-   - **Graceful Shutdown** (`background-queue.ts`): Add `process.on("SIGINT", ...)` and `process.on("SIGTERM", ...)` handlers that set a `shutdownRequested` flag, allowing the current BLPOP cycle to complete before exiting cleanly.
-   - **Worker Lifecycle Control** (`background-queue.ts:L154`): Replace the auto-starting worker loop on module import with an explicit `startWorker()` export function that must be called intentionally, preventing uncontrolled worker spawns during imports.
+   - Target files: `apps/backend/src/modules/eta-tax/client.ts`, `apps/backend/src/subscribers/order-placed-eta.ts`
+   - **`client.ts:L142-152` — Remove Mock Fallback**: When `ETA_CLIENT_ID` or `ETA_CLIENT_SECRET` are missing in production (`NODE_ENV === "production"`), throw an explicit `Error("ETA API credentials (ETA_CLIENT_ID, ETA_CLIENT_SECRET) are required in production")` instead of silently returning a mock success response (`MOCK_SUB_...`). In development, log a warning and return a clearly labeled dev-only mock.
+   - **`order-placed-eta.ts:L210-240` — Use Workflow**: Replace direct `etaTaxModuleService.submitAndAuditReceipt(...)` calls with `submitEtaTaxReceiptWorkflow.run({ input: { orderId, items, buyer } })` to leverage the defined workflow's compensation handlers, retry logic, and transactional guarantees.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store worker lifecycle rules.
+   - Execute `/learn` to store ETA credential enforcement rules.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for worker lifecycle pattern research.
-- [ ] Failed job re-queuing in `background-queue.ts` awaits computed exponential backoff delay before `rpush`.
-- [ ] SIGINT/SIGTERM handlers gracefully stop the worker loop after current job completes.
-- [ ] Worker loop no longer auto-starts on module import; requires explicit `startWorker()` call.
+- [ ] Subagents delegated for ETA client and subscriber inspection.
+- [ ] `client.ts` throws explicit error in production when ETA credentials are missing.
+- [ ] `order-placed-eta.ts` invokes `submitEtaTaxReceiptWorkflow` instead of calling service methods directly.
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
@@ -113,218 +162,102 @@ Add actual `await` delay before re-queuing failed jobs in `background-queue.ts`,
 
 ---
 
-## Part 3: ETA Tax Workflow DI & Compensation (Prompt 3)
+## Part 3: Single-Tenant Infrastructure Simplification (Prompts 4–5)
 
 ---
-### Developer Prompt 3: Resolve ETA Workflow Clients from DI Container (Preserve Token Cache) & Implement Real Compensation DLQ Retry
+### Developer Prompt 4: Simplify Docker Compose to Single-Tenant, Fix Environment Variable Names, & Add `.dockerignore`
 
 ```markdown
 /goal
 
 <TASK>
-Replace `new EtaClient()` and `new EtaHsmSigner()` in `eta-tax-workflow.ts` with DI container resolution to preserve OAuth2 token caching, and replace the stub compensation handler with real DLQ retry logic.
+Simplify `docker-compose.tenant.yml` to a clean **single-tenant** Docker Compose setup, align storefront environment variable names, and create a root `.dockerignore` file. This project is SINGLE-TENANT — remove all multi-tenant provisioning complexity.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Delegate Medusa v2 workflow step DI container resolution and compensation retry logic inspection to a subagent via `invoke_subagent`.
+- Use `invoke_subagent` to inspect Docker Compose environment variable references and Dockerfile build contexts for single-tenant alignment.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until ETA workflow resolves clients from DI container and compensation handler triggers real DLQ retries.
-- /learn: Persist Medusa workflow DI resolution and compensation rules to .gemini/rules.
+- /goal: Execute autonomously until Docker Compose runs a clean single-tenant stack with correct environment variable names.
+- /learn: Persist single-tenant Docker configuration rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/workflows/eta-tax-workflow.ts` (line 63 and compensation handler).
-   - View `apps/backend/src/modules/eta-tax/client.ts` (token caching logic).
+   - View `infrastructure/docker/docker-compose.tenant.yml` (line 158 and full file).
+   - View `infrastructure/scripts/provision-tenant.sh` (line 101 and `.env` output section).
+   - Check for `.dockerignore` in the repository root.
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/workflows/eta-tax-workflow.ts`
-   - **DI Container Resolution** (`eta-tax-workflow.ts:L63`): Replace `new EtaClient(...)` and `new EtaHsmSigner(...)` with `container.resolve("etaTax")` to use the singleton module service instance, preserving the in-memory OAuth2 token cache (`this.cachedToken`) across workflow executions.
-   - **Real Compensation Handler**: Replace the stub `console.warn(...)` compensation with actual logic that enqueues the failed submission into the BullMQ DLQ retry queue with the complete receipt payload, triggering `submitAndAuditReceipt()` on retry.
+   - Target files: `infrastructure/docker/docker-compose.tenant.yml`, `infrastructure/docker/docker-compose.yml` (create if needed), `.dockerignore`
+   - **Rename / Simplify Compose File**: Rename or create a primary `docker-compose.yml` (or simplify `docker-compose.tenant.yml`) for single-tenant deployment. Remove multi-tenant `${TENANT_ID}` templating, dynamic port offsets, and tenant-scoped volume naming.
+   - **Fix Environment Variable Mismatch** (`docker-compose.tenant.yml:L158`): Align the storefront service's backend URL variable — use `NEXT_PUBLIC_MEDUSA_BACKEND_URL` consistently (matching what `.env` and `provision-tenant.sh` output) instead of `TENANT_PUBLIC_BACKEND_URL`.
+   - **Create `.dockerignore`**: Add a root `.dockerignore` excluding `node_modules/`, `.git/`, `dist/`, `.next/`, `*.log`, `.env*`, and IDE/editor files to reduce Docker build context size and prevent secret leakage.
+   - **Redis Sentinel**: Since this is single-tenant, simplify to a single Redis instance (remove 3-node Sentinel quorum complexity) unless the user explicitly needs HA.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
+   - Run Docker compose config validation: `docker compose -f infrastructure/docker/docker-compose.tenant.yml config`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store workflow DI resolution rules.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
+   - Execute `/learn` to store single-tenant Docker configuration rules.
+   - Terminate any active subagents or background tasks before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for workflow DI resolution inspection.
-- [ ] ETA workflow resolves `EtaClient` from DI container, preserving OAuth2 token cache.
-- [ ] Compensation handler enqueues failed submissions to DLQ retry queue instead of just logging a warning.
-- [ ] Backend build completes with exit code 0.
+- [ ] Subagents delegated for Docker Compose environment variable inspection.
+- [ ] Docker Compose simplified for single-tenant deployment (no `${TENANT_ID}` templating).
+- [ ] Storefront uses `NEXT_PUBLIC_MEDUSA_BACKEND_URL` consistently.
+- [ ] Root `.dockerignore` created excluding `node_modules`, `.git`, `.next`, `.env*`.
+- [ ] Redis configuration simplified to single instance.
+- [ ] Docker Compose config passes validation.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-
-## Part 4: External API Fetch Timeouts (Prompt 4)
-
----
-### Developer Prompt 4: Add `AbortController` Fetch Timeouts to All External API Clients (Paymob, Bosta, ETA, Gemini)
+### Developer Prompt 5: Fix Provisioning Script Build Context for Single-Tenant & Simplify Deployment
 
 ```markdown
 /goal
 
 <TASK>
-Add `AbortController` with 30-second timeout to all external API `fetch` calls in Paymob `client.ts`, Bosta `client.ts`, ETA `client.ts`, and Gemini AI `client.ts`.
+Simplify `provision-tenant.sh` for **single-tenant** deployment — fix Docker build context so source code is available during `docker compose build`, and remove multi-tenant tenant directory copying logic.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect all four client files and identify every `fetch()` call that lacks an abort signal.
+- Use `invoke_subagent` to inspect the provisioning script's Docker build context setup and multi-tenant removal points.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until all external API fetch calls include AbortController timeouts.
-- /learn: Persist external API fetch timeout rules to .gemini/rules.
+- /goal: Execute autonomously until provisioning script builds containers from repository root with full source code context.
+- /learn: Persist single-tenant provisioning rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/paymob/client.ts`, `apps/backend/src/modules/bosta/client.ts`, `apps/backend/src/modules/eta-tax/client.ts`, and `apps/backend/src/modules/gemini-ai/client.ts`.
+   - View `infrastructure/scripts/provision-tenant.sh` (line 101 and full file).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/modules/paymob/client.ts`, `apps/backend/src/modules/bosta/client.ts`, `apps/backend/src/modules/eta-tax/client.ts`, `apps/backend/src/modules/gemini-ai/client.ts`
-   - For each external API `fetch()` call:
-     ```typescript
-     const controller = new AbortController();
-     const timeoutId = setTimeout(() => controller.abort(), 30_000);
-     try {
-       const response = await fetch(url, { ...options, signal: controller.signal });
-       // ... handle response
-     } finally {
-       clearTimeout(timeoutId);
-     }
-     ```
-   - Add descriptive `TimeoutError` messages in catch blocks to distinguish timeout failures from network errors.
+   - Target file: `infrastructure/scripts/provision-tenant.sh`
+   - **Fix Build Context** (`provision-tenant.sh:L101`): Remove the logic that copies only compose files into a tenant directory without source code. Instead, run `docker compose build` from the repository root so Dockerfiles have access to `apps/backend/`, `apps/storefront/`, and `packages/shared-types/`.
+   - **Simplify for Single-Tenant**: Remove tenant directory creation (`/tenants/${TENANT_ID}/`), tenant ID parameterization, and multi-tenant isolation logic. The script should provision a single production instance directly.
+   - **Keep Secret Generation**: Retain the cryptographic secret generation (`openssl rand -base64 32`) and idempotent `.env` sourcing — these are valuable for single-tenant too.
+   - **Keep Database Readiness Polling**: Retain `pg_isready` polling and migration commands.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
+   - Run bash syntax check: `bash -n infrastructure/scripts/provision-tenant.sh`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store fetch timeout patterns.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
+   - Terminate any active subagents or background tasks before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for all four client file inspections.
-- [ ] Every `fetch()` call in Paymob, Bosta, ETA, and Gemini clients includes `AbortController` with 30s timeout.
-- [ ] Timeout errors produce descriptive log messages.
-- [ ] Backend build completes with exit code 0.
-- [ ] All subagents and background tasks are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-
-## Part 5: Bosta Return Fulfillment & Cache Namespace (Prompt 5)
-
----
-### Developer Prompt 5: Implement Bosta `createReturnFulfillment` & `getFulfillmentDocuments` Methods & Unify Prewarm Cache Namespace
-
-```markdown
-/goal
-
-<TASK>
-Implement `createReturnFulfillment()` and `getFulfillmentDocuments()` in `bosta/service.ts` and update `prewarm-bosta-rates.ts` to use Medusa `ICacheService`.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Delegate Medusa v2 `AbstractFulfillmentProviderService` return fulfillment method signatures and `ICacheService` resolution to a subagent via `invoke_subagent`.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Bosta return fulfillment methods and cache namespace unification compile clean.
-- /learn: Persist Medusa fulfillment provider return methods to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/bosta/service.ts` and `apps/backend/src/jobs/prewarm-bosta-rates.ts`.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/modules/bosta/service.ts`, `apps/backend/src/jobs/prewarm-bosta-rates.ts`
-   - **`createReturnFulfillment()`**: Implement the method in `bosta/service.ts` to create a Bosta return pickup AWB using the Bosta API reverse logistics endpoint with the original AWB reference.
-   - **`getFulfillmentDocuments()`**: Implement the method to return AWB shipping label PDF URLs and tracking page URLs from Bosta.
-   - **`prewarm-bosta-rates.ts`**: Replace raw `ioredis` connection with Medusa's `ICacheService` (`container.resolve("cacheService")`) to ensure pre-warmed keys write to the same cache namespace used by `service.ts` rate lookups.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store fulfillment return method rules.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for fulfillment provider return method research.
-- [ ] `createReturnFulfillment()` creates Bosta return pickup AWBs.
-- [ ] `getFulfillmentDocuments()` returns AWB label and tracking URLs.
-- [ ] `prewarm-bosta-rates.ts` uses `ICacheService` instead of raw ioredis.
-- [ ] Backend build completes with exit code 0.
-- [ ] All subagents and background tasks are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-
-## Part 6: OpenTelemetry Auto-Instrumentation, Container `any` Casts, & Next.js Language Routing (Prompt 6)
-
----
-### Developer Prompt 6: Uncomment Root OpenTelemetry `instrumentation.ts`, Replace Container `any` Casts, & Use Next.js Routing for Language Switching
-
-```markdown
-/goal
-
-<TASK>
-Uncomment root `apps/backend/instrumentation.ts` for OpenTelemetry auto-instrumentation, replace `any` casts on Medusa container resolution calls, and switch storefront language toggling to Next.js routing.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect Medusa v2 container resolution types, OpenTelemetry Node.js SDK auto-instrumentation, and Next.js i18n routing patterns.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until OpenTelemetry auto-instrumentation is active, container resolutions are typed, and language switching uses Next.js routing.
-- /learn: Persist OpenTelemetry and Medusa type safety rules to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/instrumentation.ts` (root file — entirely commented out).
-   - Search for `as any` patterns in API routes and subscribers across `apps/backend/src/`.
-   - View storefront language toggle component.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/instrumentation.ts`, API routes and subscribers with `any` casts, storefront language toggle component
-   - **Root `instrumentation.ts`**: Uncomment and configure OpenTelemetry Node.js SDK auto-instrumentation with appropriate exporter (console fallback if OTLP collector is unreachable).
-   - **Container `any` Casts**: Replace `req.scope.resolve("payment") as any` and similar patterns across API routes and subscribers with properly typed resolution using Medusa DTO types (e.g., `IPaymentModuleService`, `IFulfillmentModuleService`, `RemoteQueryFunction`).
-   - **Next.js Language Routing**: Replace client-side React state language toggle with Next.js routing-based language switching (`router.push(`/${targetLocale}${pathname}`)`) to preserve SEO benefits of server-rendered localized pages.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-   - Run storefront build verification: `cd apps/storefront && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store type safety and i18n routing rules.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for OpenTelemetry, Medusa types, and i18n routing research.
-- [ ] Root `instrumentation.ts` uncommented and configured for OpenTelemetry auto-instrumentation.
-- [ ] Zero `as any` casts on container resolution calls in API routes and subscribers.
-- [ ] Language switching uses Next.js routing for SEO benefit.
-- [ ] Backend and storefront builds complete with exit code 0.
+- [ ] Subagents delegated for provisioning script inspection.
+- [ ] `docker compose build` runs from repository root with full source code context.
+- [ ] Multi-tenant tenant directory and `${TENANT_ID}` logic removed.
+- [ ] Cryptographic secret generation and `pg_isready` polling retained.
+- [ ] Script passes `bash -n` syntax check cleanly.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
