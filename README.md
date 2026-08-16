@@ -1,391 +1,308 @@
-# Dedicated 100% Enterprise Perfection Remediation Prompt Pack (`PROMPT_SEQUENCE_100_PERCENT_PERFECTION.md`)
+# Dedicated 96% -> 100% Final Remediation Prompt Pack (`PROMPT_SEQUENCE_FINAL_100_PERCENT.md`)
 
-This prompt pack contains **5 targeted developer prompts** engineered for **Google Antigravity Agentic IDE** to address the exact 6 remaining gaps totaling **5.5%** identified in the evaluation report, achieving a **100% Deployment Readiness Score**:
-1. **ETA Composite Multi-Tax Line Support (T1 + T4) (+1.5%)**
-2. **Tax Module Registration Duality & Clean DI Separation (+1.0%)**
-3. **Centralized HTTP Security & Zod Validation Middleware (`src/api/middlewares.ts`) (+1.0%)**
-4. **Storefront Cart `lineItemId` vs `variantId` Dual Tracking (+0.8%)**
-5. **Standalone Shared-Types Build Configuration (`"build": "tsc"`) (+0.7%)**
-6. **Dynamic Tenant Container Naming in Docker Compose (`${TENANT_ID}`) (+0.5%)**
+This prompt pack contains **4 targeted developer prompts** engineered for **Google Antigravity Agentic IDE** to address the exact 5 remaining items accounting for the remaining **4.0%**, bringing the monorepo to a **100.0% Deployment Readiness Index**:
+1. **ETA Client Constructor Parameter Misalignment (-1.5%)**
+2. **Workflow Step 3 Redundant Double Hardware Signing (-1.0%)**
+3. **Composite Multi-Tax Totals Omission in Audit Logs (-0.5%)**
+4. **Missing Kiosk / Aman Integration IDs in `medusa-config.ts` (-0.5%)**
+5. **AI Copywriter Worker `forceRefresh` Cache Bypass Flag (-0.5%)**
 
 > [!IMPORTANT]
-> **Subagent Directive**: Send these 5 prompts sequentially (Prompt 1 through Prompt 5) to your developer Antigravity instance. Every prompt explicitly instructs the agent to delegate research or sub-tasks to subagents (`invoke_subagent`).
+> **Subagent Directive**: Send these 4 prompts sequentially (Prompt 1 through Prompt 4) to your developer Antigravity instance. Every prompt explicitly instructs the agent to delegate research or sub-tasks to subagents (`invoke_subagent`).
 
 ---
 
-## Part 1: Tax Engine & Module DI Architecture (Prompts 1–2)
+## Part 1: ETA Tax Client & Workflow Signing Fixes (Prompts 1–2)
 
 ---
-### Developer Prompt 1: Implement ETA Composite Multi-Tax Line Iteration (T1 VAT + T4 Withholding Tax) in `payload-builder.ts`
+### Developer Prompt 1: Unify `EtaClient` Constructor Options Interface & Guard Against Double HSM Signing
 
 ```markdown
 /goal
 
 <TASK>
-Update `apps/backend/src/modules/eta-tax/payload-builder.ts:L197` to iterate over all `item.taxLines` rather than indexing `taxLines?.[0]`, supporting composite Egyptian tax structures (e.g., T1 VAT + T4 Withholding Tax / Table Tax) and correctly aggregating item-level and document-level tax totals.
+Align `apps/backend/src/modules/eta-tax/service.ts:L27` with `apps/backend/src/modules/eta-tax/client.ts:L49-54` by unifying constructor arguments into an options interface (`EtaClientOptions`), and add an `if (!r.signatures?.length)` guard in `client.ts:L186-188` to prevent duplicate hardware token re-signing during workflow Step 3.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Tax Compliance Researcher", TypeName: "research") to inspect `payload-builder.ts` around line 197 and analyze how Egyptian Tax Authority e-Receipt/e-Invoice v1.0 specifications handle multi-tax lines (taxableItems array with multiple taxType/subType/amount entries per item).
+- Use `invoke_subagent` (Role: "ETA Architecture Specialist", TypeName: "research") to inspect `service.ts` line 27, `client.ts` lines 45–60 and 180–195, and `eta-tax-workflow.ts` lines 75–95.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until ETA tax payload builder supports multiple tax lines per line item with exact canonical serialization.
-- /learn: Persist ETA composite multi-tax calculation rules to .gemini/rules.
+- /goal: Execute autonomously until EtaClient constructor takes an options object and client.submitReceipts avoids redundant HSM re-signing.
+- /learn: Persist ETA client constructor and HSM signature deduplication rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/eta-tax/payload-builder.ts` (lines 180–240).
-   - Review ETA spec for `taxableItems`:
-     ```json
-     "taxableItems": [
-       { "taxType": "T1", "subType": "V009", "rate": 14, "amount": 140.00 },
-       { "taxType": "T4", "subType": "W001", "rate": 1, "amount": 10.00 }
-     ]
-     ```
+   - View `apps/backend/src/modules/eta-tax/service.ts` (lines 20–35).
+   - View `apps/backend/src/modules/eta-tax/client.ts` (lines 45–60 and 180–195).
+   - Check `apps/backend/src/workflows/eta-tax-workflow.ts` (Step 2 and Step 3).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/backend/src/modules/eta-tax/payload-builder.ts`
-   - **Composite Multi-Tax Line Iteration** (`payload-builder.ts`):
-     Refactor the line item tax evaluation:
+   - Target files: `apps/backend/src/modules/eta-tax/client.ts`, `apps/backend/src/modules/eta-tax/service.ts`
+   - **Unify `EtaClient` Constructor Interface** (`client.ts` & `service.ts`):
+     Define and export an options interface in `client.ts`:
      ```typescript
-     // BEFORE (Single Tax Line only):
-     const taxLine = item.taxLines?.[0];
-     const vatRate = taxLine?.rate ?? 14;
-     ...
-
-     // AFTER (Composite Multi-Tax Support):
-     const taxableItems = (item.taxLines && item.taxLines.length > 0)
-       ? item.taxLines.map((tl) => {
-           const taxType = tl.code?.startsWith("T") ? tl.code : (tl.taxType || "T1");
-           const subType = tl.subType || (taxType === "T1" ? "V009" : "W001");
-           const rate = Number(tl.rate ?? 14);
-           const taxAmount = roundCurrency((lineTotalEgp * rate) / 100);
-           return {
-             taxType,
-             subType,
-             rate,
-             amount: taxAmount,
-           };
-         })
-       : [
-           {
-             taxType: "T1",
-             subType: "V009",
-             rate: 14,
-             amount: roundCurrency((lineTotalEgp * 14) / 100),
-           },
-         ];
+     export interface EtaClientOptions {
+       clientId?: string;
+       clientSecret?: string;
+       environment?: "preprod" | "production" | string;
+       hsmProxyUrl?: string;
+       accessToken?: string;
+       isProduction?: boolean;
+     }
      ```
-   - **Aggregate Total Taxes by Tax Type**: Sum all taxable items across lines by `taxType` in the receipt summary header (`taxTotals`).
-   - Run the built-in self-test in `payload-builder.ts` to ensure canonical JSON sorting and SHA-256 digest calculations pass cleanly.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store ETA composite tax rules.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for ETA multi-tax structure analysis.
-- [ ] `payload-builder.ts` maps all `taxLines` per item into `taxableItems` array.
-- [ ] Summary `taxTotals` aggregates amounts by tax type (T1, T4, etc.).
-- [ ] Canonical serialization and SHA-256 self-tests pass.
-- [ ] Backend build completes with exit code 0.
-- [ ] All subagents and background tasks cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 2: Clean Up Tax Module Registration Duality in `medusa-config.ts`
-
-```markdown
-/goal
-
-<TASK>
-Clean up the module registration duality in `apps/backend/medusa-config.ts:L100-L123` by cleanly separating the tax rate calculation provider (`@medusajs/medusa/tax`) from the standalone custom audit & HSM module (`eta-tax`), ensuring unified Medusa DI container bindings.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect `medusa-config.ts` lines 90–130, `src/modules/eta-tax/index.ts`, and `src/modules/eta-tax/service.ts` to analyze the provider vs custom module exports.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until ETA tax module registrations in medusa-config.ts are unified and DI container resolutions are crystal clear.
-- /learn: Persist Medusa v2 provider vs standalone module registration patterns to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/medusa-config.ts` (lines 90–135).
-   - View `apps/backend/src/modules/eta-tax/index.ts`.
-   - Check where subscribers and workflows resolve `etaTax` vs `taxService`.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/medusa-config.ts`, `apps/backend/src/modules/eta-tax/index.ts`
-   - **Unified Registration Architecture**:
-     Ensure `eta-tax` is registered cleanly in `medusa-config.ts`:
-     - Under `modules`: Register `resolve: "./src/modules/eta-tax"` as the primary custom module providing the DML models (`EtaReceiptAudit`), HSM proxy signer, and client services.
-     - Under `tax` providers: If serving as a calculation provider, point `resolve: "./src/modules/eta-tax"` with provider options, or export the `AbstractTaxProvider` provider service cleanly from `src/modules/eta-tax/provider.ts`.
-     - Standardize the container resolution key: `ETA_TAX_MODULE = "etaTax"` so `container.resolve("etaTax")` or `container.resolve(ETA_TAX_MODULE)` consistently retrieves the module service across all subscribers, workflows, and background workers.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store Medusa v2 module registration rules.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for module registration and DI resolution inspection.
-- [ ] `medusa-config.ts` contains clean, non-conflicting registrations for `eta-tax`.
-- [ ] `container.resolve("etaTax")` resolves cleanly in subscribers and workflows.
-- [ ] Backend build completes with exit code 0.
-- [ ] All subagents and background tasks cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-
-## Part 2: Security Middleware & Storefront Cart Precision (Prompts 3–4)
-
----
-### Developer Prompt 3: Create Central HTTP Security & Validation Middleware (`src/api/middlewares.ts`)
-
-```markdown
-/goal
-
-<TASK>
-Create `apps/backend/src/api/middlewares.ts` to attach global HTTP security headers (HSTS, CSP, X-Content-Type-Options, X-Frame-Options), dynamic CORS regex origin parsing for multi-tenant subdomains, and centralized Zod request body validation across custom routes.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to research Medusa v2 `defineMiddlewares` pattern from `@medusajs/medusa` or `@medusajs/framework/http`, and inspect custom routes in `apps/backend/src/api/`.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until central security middlewares and Zod validation are active across all custom API routes.
-- /learn: Persist Medusa v2 defineMiddlewares and security header rules to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - Check Medusa v2 middleware documentation and existing routes under `apps/backend/src/api/`.
-   - Check `medusa-config.ts` CORS settings.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/api/middlewares.ts` (NEW), `apps/backend/medusa-config.ts`
-   - **Create Central Middleware Definition** (`src/api/middlewares.ts`):
+     Update `EtaClient` constructor in `client.ts`:
      ```typescript
-     import { defineMiddlewares } from "@medusajs/medusa"
-     import { MedusaRequest, MedusaResponse, MedusaNextFunction } from "@medusajs/framework/http"
-
-     export function securityHeadersMiddleware(
-       req: MedusaRequest,
-       res: MedusaResponse,
-       next: MedusaNextFunction
+     constructor(
+       options: EtaClientOptions = {},
+       container?: EtaClientDependencies
      ) {
-       res.setHeader("X-Content-Type-Options", "nosniff")
-       res.setHeader("X-Frame-Options", "DENY")
-       res.setHeader("X-XSS-Protection", "1; mode=block")
-       res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
-       res.setHeader(
-         "Content-Security-Policy",
-         "default-src 'self'; script-src 'self' https://accept.paymob.com; frame-src https://accept.paymob.com;"
-       )
-       next()
+       this.clientId = options.clientId || process.env.ETA_CLIENT_ID || "";
+       this.clientSecret = options.clientSecret || process.env.ETA_CLIENT_SECRET || "";
+       this.environment = options.environment || (process.env.NODE_ENV === "production" ? "production" : "preprod");
+       this.isProduction = options.isProduction ?? (this.environment === "production" || process.env.NODE_ENV === "production");
+       this.hsmSigner = container?.resolve?.("hsmSigner") || new EtaHsmSigner({
+         hsmProxyUrl: options.hsmProxyUrl || process.env.ETA_HSM_PROXY_URL,
+         environment: this.environment,
+       });
+       this.container = container;
      }
-
-     export default defineMiddlewares({
-       routes: [
-         {
-           matcher: "/admin/*",
-           middlewares: [securityHeadersMiddleware],
-         },
-         {
-           matcher: "/store/*",
-           middlewares: [securityHeadersMiddleware],
-         },
-         {
-           matcher: "/hooks/*",
-           middlewares: [securityHeadersMiddleware],
-         },
-       ],
-     })
      ```
-   - **Dynamic Tenant CORS Parsing** (`medusa-config.ts`):
-     Enhance CORS handling so that in addition to fixed origins, wildcard tenant storefront subdomains (e.g., `https://*.storefront.eg`) are safely matched and authorized.
+     Update `service.ts:L27`:
+     ```typescript
+     this.etaClient_ = new EtaClient(
+       {
+         clientId: this.options_.clientId,
+         clientSecret: this.options_.clientSecret,
+         environment: this.options_.environment,
+         hsmProxyUrl: this.options_.hsmProxyUrl,
+       },
+       this.container_
+     );
+     ```
+     *Rationale*: Eliminates the positional parameter bug where `clientId` was assigned as `accessToken` and string `clientSecret` coerced `isProduction` to `true`.
+
+   - **Prevent Redundant Double Hardware Signing** (`client.ts:L186-188`):
+     ```typescript
+     async submitReceipts(receipts: (EtaReceiptPayload | EtaSignedReceiptPayload)[]): Promise<EtaSubmissionResponse> {
+       const signedReceipts: EtaSignedReceiptPayload[] = await Promise.all(
+         receipts.map(async (r) => {
+           // If already signed by workflow Step 2 (signEtaReceiptHsmStep), do not re-sign:
+           if ("signatures" in r && Array.isArray(r.signatures) && r.signatures.length > 0) {
+             return r as EtaSignedReceiptPayload;
+           }
+           return this.hsmSigner.signReceipt(r as EtaReceiptPayload);
+         })
+       );
+       ...
+     ```
+     *Rationale*: Prevents unnecessary physical USB token roundtrips and latency during Step 3 submission.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store central middleware rules.
+   - Execute `/learn` to store unified constructor options and signature idempotency rules.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for Medusa v2 `defineMiddlewares` pattern research.
-- [ ] `src/api/middlewares.ts` created and exports `defineMiddlewares` with security headers.
-- [ ] Security headers (HSTS, CSP, X-Frame-Options, X-Content-Type-Options) attached to all API routes.
+- [ ] Subagents delegated for ETA client and service parameter inspection.
+- [ ] `EtaClient` constructor accepts `EtaClientOptions` object.
+- [ ] `service.ts` instantiates `EtaClient` passing `{ clientId, clientSecret, environment, hsmProxyUrl }`.
+- [ ] `client.submitReceipts` skips hardware signing if payload already contains valid `signatures`.
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents and background tasks cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 4: Implement Dual `lineItemId` vs `variantId` Tracking in Storefront `cart-context.tsx`
+### Developer Prompt 2: Fix Composite Multi-Tax Totals Summation in ETA Audit Log & Service
 
 ```markdown
 /goal
 
 <TASK>
-Update `apps/storefront/src/lib/context/cart-context.tsx:L204,L234` to track both `lineItemId` (Medusa's `item_01...` ID) and `variantId` in the client cart state, ensuring update and delete operations dispatch the exact line item ID expected by Medusa v2 (`DELETE /store/carts/:id/line-items/:line_id`).
+Update `apps/backend/src/modules/eta-tax/service.ts:L77` to calculate `totalVatCents` by summing all elements of `payload.taxTotals` array rather than reading only index `[0]`.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect `cart-context.tsx` lines 180–260 and verify Medusa v2 Store API cart line item mutation signatures.
+- Use `invoke_subagent` to inspect `service.ts` lines 70–90 and check `EtaReceiptAudit` model fields for tax logging.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until storefront cart state tracks both lineItemId and variantId for 100% reliable cart item deletion and quantity updates.
-- /learn: Persist Medusa v2 cart line item state management rules to .gemini/rules.
+- /goal: Execute autonomously until audit log correctly captures the sum of composite tax totals.
+- /learn: Persist composite tax summation rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/storefront/src/lib/context/cart-context.tsx` (cart line item types and update/delete methods).
-   - Verify Medusa v2 Store API endpoints:
-     - Add: `POST /store/carts/:id/line-items` (payload: `{ variant_id, quantity }`)
-     - Update: `POST /store/carts/:id/line-items/:line_id` (payload: `{ quantity }`)
-     - Delete: `DELETE /store/carts/:id/line-items/:line_id`
+   - View `apps/backend/src/modules/eta-tax/service.ts` (lines 65–90).
 
 2. IMPLEMENTATION PHASE:
-   - Target file: `apps/storefront/src/lib/context/cart-context.tsx`
-   - **Dual ID State Representation**:
-     Ensure each cart item interface explicitly defines:
+   - Target file: `apps/backend/src/modules/eta-tax/service.ts`
+   - **Composite Multi-Tax Totals Summation** (`service.ts:L77`):
      ```typescript
-     export interface CartItem {
-       id: string; // The Medusa line_item.id (e.g. "item_01...")
-       variantId: string; // The product variant.id (e.g. "variant_01...")
-       title: string;
-       thumbnail?: string;
-       quantity: number;
-       unitPrice: number;
-       // ...
-     }
+     // BEFORE:
+     const totalVatCents = Math.round(payload.taxTotals[0]?.amount * 100 || 0);
+
+     // AFTER:
+     const totalVatCents = Math.round(
+       (payload.taxTotals || []).reduce((sum, item) => sum + (Number(item.amount) || 0), 0) * 100
+     );
      ```
-   - **Update `removeItem` and `updateQuantity`**:
-     When calling `removeItem(lineItemId: string)` or `updateQuantity(lineItemId: string, quantity: number)`, ensure the request dispatches using the item's `id` (the line item ID), while lookup helpers can find items by either `id` or `variantId`.
-   - Synchronize with `BroadcastChannel` payload serialization so multi-tab cart synchronization preserves both IDs across tabs.
+     *Rationale*: Captures the full tax sum in `eta_receipt_audit` when orders have composite Egyptian taxes (e.g. 14% T1 VAT + 1% T4 Withholding Tax or Table Tax), rather than dropping secondary tax amounts.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run storefront typecheck: `cd apps/storefront && npx tsc --noEmit`
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Subagents delegated for ETA service audit total inspection.
+- [ ] `totalVatCents` sums all items in `payload.taxTotals` array with `reduce`.
+- [ ] Backend build completes with exit code 0.
+- [ ] All subagents and background tasks cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+
+## Part 2: Configuration & Worker Cache Controls (Prompts 3–4)
+
+---
+### Developer Prompt 3: Add `kioskIntegrationId` & `amanIntegrationId` to `medusa-config.ts` Paymob Provider Options
+
+```markdown
+/goal
+
+<TASK>
+Add `kioskIntegrationId` and `amanIntegrationId` to the Paymob provider options object in `apps/backend/medusa-config.ts:L75-81` to guarantee pure dependency-injected options isolation.
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to inspect `medusa-config.ts` lines 70–90 and compare against `PaymobModuleOptions` in `src/modules/paymob/types.ts`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until medusa-config.ts explicitly injects kiosk and aman integration IDs into Paymob module options.
+- /learn: Persist Paymob DI options completeness rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/medusa-config.ts` (lines 70–95).
+   - View `apps/backend/src/modules/paymob/types.ts` (`PaymobModuleOptions`).
+
+2. IMPLEMENTATION PHASE:
+   - Target file: `apps/backend/medusa-config.ts`
+   - **Inject Kiosk & Aman Options** (`medusa-config.ts`):
+     ```typescript
+     providers: [
+       {
+         resolve: "./src/modules/paymob",
+         id: "paymob",
+         options: {
+           apiKey: process.env.PAYMOB_API_KEY,
+           hmacSecret: process.env.PAYMOB_HMAC_SECRET,
+           cardIntegrationId: process.env.PAYMOB_CARD_INTEGRATION_ID,
+           walletIntegrationId: process.env.PAYMOB_WALLET_INTEGRATION_ID,
+           valuIntegrationId: process.env.PAYMOB_VALU_INTEGRATION_ID,
+           souhoolaIntegrationId: process.env.PAYMOB_SOUHOOLA_INTEGRATION_ID,
+           symplIntegrationId: process.env.PAYMOB_SYMPL_INTEGRATION_ID,
+           kioskIntegrationId: process.env.PAYMOB_KIOSK_INTEGRATION_ID,
+           amanIntegrationId: process.env.PAYMOB_AMAN_INTEGRATION_ID,
+         },
+       },
+     ],
+     ```
+     *Rationale*: Guarantees pure dependency injection without requiring fallback to global `process.env` lookups within service methods.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Subagents delegated for Paymob configuration options inspection.
+- [ ] `medusa-config.ts` injects `kioskIntegrationId` and `amanIntegrationId`.
+- [ ] Backend build completes with exit code 0.
+- [ ] All subagents and background tasks cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 4: Add `forceRefresh` Cache Bypass Flag to AI Copywriter Worker & Admin Widget
+
+```markdown
+/goal
+
+<TASK>
+Add an optional `forceRefresh?: boolean` parameter to `apps/backend/src/jobs/ai-copywriter-worker.ts:L83-89`, `apps/backend/src/jobs/background-queue.ts`, and `apps/backend/src/admin/widgets/ai-copywriter.tsx` to allow administrators to regenerate copy on-demand without 24-hour cache locks.
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to inspect `ai-copywriter-worker.ts` lines 75–100, `background-queue.ts` job types, and `ai-copywriter.tsx` generation dispatch.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until AI copywriter worker respects forceRefresh to bypass stale 24h cache when requested.
+- /learn: Persist worker cache bypass rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/backend/src/jobs/ai-copywriter-worker.ts` (lines 75–105).
+   - View `apps/backend/src/jobs/background-queue.ts` (`AiCopywriterJobData` interface).
+   - View `apps/backend/src/admin/widgets/ai-copywriter.tsx` (request payload).
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `apps/backend/src/jobs/background-queue.ts`, `apps/backend/src/jobs/ai-copywriter-worker.ts`, `apps/backend/src/admin/widgets/ai-copywriter.tsx`
+   - **Add `forceRefresh` to Job Interface** (`background-queue.ts`):
+     ```typescript
+     export interface AiCopywriterJobData {
+       productId: string;
+       title: string;
+       description?: string;
+       category?: string;
+       forceRefresh?: boolean;
+     }
+     ```
+   - **Respect `forceRefresh` in Worker** (`ai-copywriter-worker.ts:L83-89`):
+     ```typescript
+     const existingResult = await getAiCopywriterTaskResult(productId);
+     if (!job.data.forceRefresh && existingResult && existingResult.status === "COMPLETED") {
+       console.log(`[AiWorker] Returning cached copy for product ${productId}`);
+       return existingResult;
+     }
+     ```
+   - **Pass `forceRefresh` from Admin Widget** (`ai-copywriter.tsx`):
+     Add a "Regenerate" toggle or checkbox (`forceRefresh: true`) when the user clicks the "Regenerate Copy" button.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run backend typecheck: `cd apps/backend && npx tsc --noEmit`
+   - Run backend Medusa build: `cd apps/backend && npm run build`
    - Run storefront build: `cd apps/storefront && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store cart line item state rules.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for cart line item state inspection.
-- [ ] Cart item state tracks both `id` (`lineItemId`) and `variantId`.
-- [ ] `removeItem` and `updateQuantity` dispatch requests using the exact Medusa line item ID.
-- [ ] BroadcastChannel multi-tab sync preserves both IDs.
-- [ ] Storefront build completes with exit code 0.
-- [ ] All subagents and background tasks cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-
-## Part 3: Package Portability & Infrastructure Multi-Tenancy (Prompt 5)
-
----
-### Developer Prompt 5: Standalone Shared-Types Build Configuration & Dynamic Tenant Container Naming in Docker Compose
-
-```markdown
-/goal
-
-<TASK>
-Make `packages/shared-types` standalone by adding `typescript` to `devDependencies` with `"build": "tsc"`, and parameterize container names in `infrastructure/docker/docker-compose.tenant.yml` with `${TENANT_ID}` to prevent multi-tenant name collisions.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect `packages/shared-types/package.json` build scripts and `infrastructure/docker/docker-compose.tenant.yml` container naming.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until shared-types builds independently with tsc and docker-compose parameterizes container names.
-- /learn: Persist monorepo package isolation and Docker multi-tenant container naming rules to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `packages/shared-types/package.json` (lines 1–25).
-   - View `infrastructure/docker/docker-compose.tenant.yml` (`container_name` directives).
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `packages/shared-types/package.json`, `infrastructure/docker/docker-compose.tenant.yml`
-   - **Standalone Shared-Types Build** (`packages/shared-types/package.json`):
-     ```json
-     {
-       "name": "@dtc/shared-types",
-       "version": "0.0.1",
-       "main": "dist/index.js",
-       "types": "dist/index.d.ts",
-       "scripts": {
-         "build": "tsc",
-         "clean": "rimraf dist"
-       },
-       "devDependencies": {
-         "typescript": "^5.6.3"
-       }
-     }
-     ```
-     *Rationale*: Replaces the brittle relative path (`"node ../../apps/storefront/node_modules/typescript/lib/tsc.js"`) with standard `tsc`, allowing `shared-types` to build cleanly in isolated Docker stages without requiring storefront files.
-
-   - **Dynamic Tenant Container Naming** (`docker-compose.tenant.yml`):
-     Parameterize all container names with `${TENANT_ID:-default}`:
-     ```yaml
-     services:
-       postgres:
-         container_name: medusa_postgres_${TENANT_ID:-default}
-         ...
-       redis:
-         container_name: medusa_redis_${TENANT_ID:-default}
-         ...
-       backend:
-         container_name: medusa_backend_${TENANT_ID:-default}
-         ...
-       storefront:
-         container_name: medusa_storefront_${TENANT_ID:-default}
-         ...
-     ```
-     *Rationale*: Allows multiple merchant tenant stacks to run concurrently on the same Docker host without container name collisions.
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run shared-types build: `npm run build --workspace=packages/shared-types`
-   - Run backend typecheck & build: `cd apps/backend && npx tsc --noEmit && npm run build`
-   - Run storefront typecheck & build: `cd apps/storefront && npx tsc --noEmit && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for package.json and Docker compose inspection.
-- [ ] `packages/shared-types/package.json` uses standard `"build": "tsc"` with `typescript` devDependency.
-- [ ] `docker-compose.tenant.yml` parameterizes `container_name` with `${TENANT_ID:-default}`.
-- [ ] All workspaces (`shared-types`, `apps/backend`, `apps/storefront`) pass typecheck and build with exit code 0.
+- [ ] Subagents delegated for AI worker job interface and cache logic inspection.
+- [ ] `AiCopywriterJobData` includes `forceRefresh?: boolean`.
+- [ ] `ai-copywriter-worker.ts` checks `!job.data.forceRefresh` before returning cached results.
+- [ ] Admin widget can dispatch `forceRefresh: true`.
+- [ ] Full monorepo compiles clean with 0 errors (`shared-types`, `backend`, `storefront`).
 - [ ] All subagents and background tasks cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
