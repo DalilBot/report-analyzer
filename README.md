@@ -1,123 +1,139 @@
-# Dedicated 8.6 Report & Multi-LLM Provider Prompt Pack (`PROMPT_SEQUENCE_86_FINAL_REPORT_FIXES.md`)
+# Dedicated 9.0 Report Remediation Prompt Pack (`PROMPT_SEQUENCE_90_FINAL_REPORT_FIXES.md`)
 
-This prompt pack contains **5 targeted developer prompts** engineered for **Google Antigravity Agentic IDE** to resolve the exact new defects identified in the latest 8.6/10 evaluation report: migrating fake "BullMQ" to real `bullmq` with `BRPOPLPUSH`/ atomic pops, eliminating `any` container resolution casts with `MedusaContainer`, fixing DI bypass in ETA workflow fallback, injecting CORS in `provision-tenant.sh`, replacing `alert()` with a toast library, adding OpenRouter API & Hack Club AI API support to Gemini AI client, fixing hardcoded storefront product data, and memory leak cleanups. Zero older problems are included.
+This prompt pack contains **5 targeted developer prompts** engineered for **Google Antigravity Agentic IDE** to resolve the exact new defects identified in the latest 9.0/10 evaluation report: Redis key casing mismatch in Bosta prewarm job, hardcoded Bosta COD shipment type, ETA fallback EGS item code TRN calculation, HSM signer proxy URL option fallback, worker DLQ error handling bypass, top-level custom module registration for `eta-tax`, BullMQ worker bootstrapping loader, and storefront shared package dependency link. Zero older problems are included.
 
 > [!IMPORTANT]
 > **Subagent Directive**: Send these 5 prompts sequentially (Prompt 1 through Prompt 5) to your developer Antigravity instance. Every prompt explicitly instructs the agent to delegate research or sub-tasks to subagents (`invoke_subagent`).
 
 ---
 
-## Part 1: Background Queue Reliability & LLM Multi-Provider Support (Prompts 1–2)
+## Part 1: High Priority Functional & Regulatory Fixes (Prompts 1–2)
 
 ---
-### Developer Prompt 1: Replace Fake Redis Queue with Real `bullmq` (Atomic Pops & Lock Recovery) & Eliminate `any` Container Resolutions
+### Developer Prompt 1: Fix ETA Fallback EGS Item Code TRN & HSM Proxy URL Constructor Option Fallback
 
 ```markdown
 /goal
 
 <TASK>
-Migrate `apps/backend/src/jobs/background-queue.ts` from custom `rpush`/`blpop` to the official `bullmq` npm package (with atomic pops, stalled job recovery, and job visibility timeouts), eliminate `any` container resolution casts using proper `MedusaContainer<T>` types across all jobs/subscribers, and fix brittle fallback resolution chains.
+Update `apps/backend/src/modules/eta-tax/payload-builder.ts:L222` to use the issuer's actual Tax Registration Number instead of hardcoded `EG-100200300`, and fix `apps/backend/src/modules/eta-tax/hsm-signer.ts:L42` to check `this.hsmProxyUrl` instead of ignoring constructor options.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Queue Architecture Researcher", TypeName: "research") to inspect `apps/backend/src/jobs/background-queue.ts` and catalog all custom Redis pop logic and missing BullMQ worker configurations.
-- Use a second `invoke_subagent` to search the backend for all `container.resolve<any>()` and `(container as any).resolve()` calls to build a complete replacement list.
+- Use `invoke_subagent` (Role: "Codebase Researcher", TypeName: "research") to inspect `payload-builder.ts` line 222 and `hsm-signer.ts` line 42 to verify current property references.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until background queue uses official BullMQ with stalled job recovery and all container resolutions are typed with MedusaContainer.
-- /learn: Persist BullMQ worker lifecycle and typed container resolution rules to .gemini/rules.
+- /goal: Execute autonomously until EGS item codes use dynamic issuer TRNs and HSM signer checks constructor instance properties.
+- /learn: Persist ETA tax payload EGS code formatting and HSM configuration rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/jobs/background-queue.ts` (full file).
-   - View `apps/backend/src/jobs/ai-copywriter-worker.ts`.
-   - Search for `resolve<any>` across `apps/backend/src/`.
+   - View `apps/backend/src/modules/eta-tax/payload-builder.ts` (lines 215–230).
+   - View `apps/backend/src/modules/eta-tax/hsm-signer.ts` (lines 35–50).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/jobs/background-queue.ts`, `apps/backend/src/jobs/ai-copywriter-worker.ts`, subscriber & job files
-   - **Migrate to Real `bullmq`**: Replace custom `rpush`/`blpop` with official `Queue` and `Worker` instances from the `bullmq` package. Ensure job visibility timeouts, stalled job recovery (using `stalledInterval`), and atomic pops (`BRPOPLPUSH`/`BLMOVE` under the hood) are active to guarantee zero job loss on worker crash.
-   - **Typed Container Resolutions**: Replace `req.scope.resolve<any>(...)`, `container.resolve<any>(...)`, and `(container as any).resolve(...)` with properly typed resolutions using `MedusaContainer`:
+   - Target files: `apps/backend/src/modules/eta-tax/payload-builder.ts`, `apps/backend/src/modules/eta-tax/hsm-signer.ts`
+   - **Fix Fallback EGS Item Code** (`payload-builder.ts:L222`):
      ```typescript
-     import { MedusaContainer } from "@medusajs/framework/types"
-     const etaService = container.resolve<EtaTaxModuleService>("etaTax")
+     // BEFORE:
+     itemCode: item.itemCode || `EG-100200300-${item.sku || index + 1}`,
+
+     // AFTER:
+     itemCode: item.itemCode || `EG-${defaultIssuer.taxRegistrationNumber}-${item.sku || index + 1}`,
      ```
-   - **Fix Brittle Fallbacks**: Replace `resolve("etaTaxModuleService") || resolve("eta-tax")` chains with direct, typed module resolution keys (`ETA_TAX_MODULE` constant).
-   - **Lazy Connection**: Move Redis client instantiation inside `startWorker()` so importing the module does not create dangling connections.
+     *Rationale*: Fallback EGS item codes must use the merchant's actual Tax Registration Number (`defaultIssuer.taxRegistrationNumber`), not a hardcoded dummy TRN (`100200300`), to pass Egyptian Tax Authority validation.
+
+   - **Fix HSM Proxy URL Guard** (`hsm-signer.ts:L42`):
+     ```typescript
+     // BEFORE:
+     if (!this.enabled || !process.env.ETA_HSM_PROXY_URL) {
+
+     // AFTER:
+     if (!this.enabled || !this.hsmProxyUrl) {
+     ```
+     *Rationale*: Check the resolved instance property `this.hsmProxyUrl` (which receives constructor options from module config) instead of bypassing constructor options when `process.env.ETA_HSM_PROXY_URL` is omitted.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store BullMQ worker lifecycle rules.
+   - Execute `/learn` to store ETA tax configuration rules.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] 2 subagents delegated for queue catalog and container resolution scan.
-- [ ] `background-queue.ts` uses official `bullmq` `Queue` and `Worker` classes.
-- [ ] Zero `resolve<any>` or `(container as any)` calls in jobs/subscribers — all typed with `MedusaContainer`.
-- [ ] Redis connection lazy-loaded inside `startWorker()`.
+- [ ] Subagents delegated for ETA payload builder and HSM signer code inspection.
+- [ ] `payload-builder.ts` constructs fallback EGS item codes using `defaultIssuer.taxRegistrationNumber`.
+- [ ] `hsm-signer.ts` checks `this.hsmProxyUrl` instead of relying solely on `process.env.ETA_HSM_PROXY_URL`.
+- [ ] Backend typecheck passes with 0 errors (`tsc --noEmit`).
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
-### Developer Prompt 2: Add Multi-Provider LLM Support (OpenRouter API & Hack Club AI API) to Gemini AI Client
+### Developer Prompt 2: Fix Bosta Prewarm Redis Key Casing Mismatch & Dynamic COD Shipment Type
 
 ```markdown
 /goal
 
 <TASK>
-Extend `apps/backend/src/modules/gemini-ai/client.ts` and configuration to support **OpenRouter API** (`https://openrouter.ai/api/v1`) and **Hack Club AI API** (`https://ai.hackclub.com/v1`) alongside native Gemini API studio, with provider fallback and structured JSON output preservation.
+Fix Redis key casing in `apps/backend/src/jobs/prewarm-bosta-rates.ts:L56` from uppercase to lowercase to match `service.ts`, and update `apps/backend/src/modules/bosta/service.ts:L254` to set shipment type dynamically based on COD amount.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect the Gemini AI client implementation and research the Hack Club AI endpoint specification (`https://docs.ai.hackclub.com/`) and OpenRouter OpenAI-compatible chat completions interface.
+- Use `invoke_subagent` to inspect `prewarm-bosta-rates.ts` line 56 and `bosta/service.ts` line 254 side-by-side to verify exact Redis key strings and shipment type fields.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until Gemini AI module supports OpenRouter and Hack Club AI APIs with automatic provider failover.
-- /learn: Persist multi-provider LLM integration rules to .gemini/rules.
+- /goal: Execute autonomously until prewarm Redis keys match service cache reads and Bosta shipment type is dynamic.
+- /learn: Persist Redis cache key casing and Bosta shipment type rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/modules/gemini-ai/client.ts`.
-   - View `apps/backend/src/modules/gemini-ai/service.ts`.
-   - View `apps/backend/medusa-config.ts` (Gemini options block).
+   - View `apps/backend/src/jobs/prewarm-bosta-rates.ts` (lines 50–65).
+   - View `apps/backend/src/modules/bosta/service.ts` (lines 170–185 for cache read, and lines 245–260 for shipment creation).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/modules/gemini-ai/client.ts`, `apps/backend/src/modules/gemini-ai/service.ts`, `apps/backend/medusa-config.ts`
-   - **Configure Provider Strategy**: Update module options to accept `LLM_PROVIDER` ("gemini" | "openrouter" | "hackclub"), `OPENROUTER_API_KEY`, and `HACKCLUB_API_KEY`.
-   - **OpenRouter Endpoint**: Implement OpenRouter OpenAI-compatible `/v1/chat/completions` dispatch when `LLM_PROVIDER === "openrouter"` or as secondary fallback:
-     - Endpoint: `https://openrouter.ai/api/v1/chat/completions`
-     - Headers: `Authorization: Bearer ${OPENROUTER_API_KEY}`, `HTTP-Referer: https://medusa-eg.com`, `X-Title: Medusa EG AI`
-     - Response Format: `{ type: "json_object" }`
-   - **Hack Club AI Endpoint**: Implement Hack Club AI proxy dispatch (`https://ai.hackclub.com/v1/chat/completions`) per Hack Club docs (`https://docs.ai.hackclub.com/`):
-     - Endpoint: `https://ai.hackclub.com/v1/chat/completions`
-     - Headers: `Authorization: Bearer ${HACKCLUB_API_KEY}`
-     - Model: `meta-llama/llama-3.3-70b-instruct` or specified model
-   - **Structured Output & Prompt Sanitization**: Ensure prompt injection sanitization (`sanitizePromptInput`) and structured JSON schema validation apply consistently regardless of whether native Gemini, OpenRouter, or Hack Club AI is serving the request.
-   - **Provider Fallback Cascade**: If the primary provider fails with a transient error (timeout, 5xx, 429), cascade automatically: Native Gemini → OpenRouter → Hack Club AI before failing over to hardcoded template.
+   - Target files: `apps/backend/src/jobs/prewarm-bosta-rates.ts`, `apps/backend/src/modules/bosta/service.ts`
+   - **Fix Redis Key Casing** (`prewarm-bosta-rates.ts:L56`):
+     ```typescript
+     // BEFORE:
+     const redisKey = `BOSTA_RATE_${option.id}_${gov.cityId}_W${weightKey}`;
+
+     // AFTER:
+     const redisKey = `bosta_rate_${option.id}_${gov.cityId}_W${weightKey}`;
+     ```
+     *Rationale*: `BostaFulfillmentProviderService.calculatePrice()` in `service.ts:L178` reads lowercase keys (`bosta_rate_...`). Writing uppercase keys in the prewarm job causes 100% cache misses due to Redis key case sensitivity.
+
+   - **Fix Dynamic COD Shipment Type** (`bosta/service.ts:L254-256`):
+     ```typescript
+     // BEFORE:
+     type: 10,
+
+     // AFTER:
+     type: Number(codAmount) > 0 ? 10 : 1,
+     ```
+     *Rationale*: Bosta API type `10` is Cash Collection (COD). Prepaid orders (credit card, mobile wallet) must use type `1` (Standard Delivery). Hardcoding type `10` forces Bosta couriers to collect cash on already paid orders.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
    - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
    - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store multi-LLM provider rules.
+   - Execute `/learn` to store Bosta logistics configuration rules.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for OpenRouter and Hack Club AI API research.
-- [ ] Client supports native Gemini, OpenRouter (`openrouter.ai/api/v1`), and Hack Club AI (`ai.hackclub.com/v1`).
-- [ ] Provider fallback cascade (Gemini → OpenRouter → Hack Club AI) active for transient errors.
-- [ ] Structured JSON enforcement & prompt sanitization preserved across all providers.
+- [ ] Subagents delegated for Bosta prewarm job and service inspection.
+- [ ] `prewarm-bosta-rates.ts` writes lowercase `bosta_rate_` Redis keys matching `service.ts` reads.
+- [ ] `bosta/service.ts` sets `type: Number(codAmount) > 0 ? 10 : 1` dynamically.
+- [ ] Backend typecheck passes with 0 errors (`tsc --noEmit`).
 - [ ] Backend build completes with exit code 0.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
@@ -125,175 +141,210 @@ Extend `apps/backend/src/modules/gemini-ai/client.ts` and configuration to suppo
 
 ---
 
-## Part 2: Module Refactoring & Provisioning Fixes (Prompts 3–4)
+## Part 2: Structural Refactoring & Module Architecture (Prompts 3–4)
 
 ---
-### Developer Prompt 3: Fix ETA Workflow DI Fallback Container Injection, Type Webhook Paymob/Bosta Payloads, & Inject CORS in Provisioning Script
+### Developer Prompt 3: Register `eta-tax` as Top-Level Custom Module & Fix Background Queue Worker DLQ Retry Bypass
 
 ```markdown
 /goal
 
 <TASK>
-Fix DI container injection in `eta-tax-workflow.ts` fallback, create explicit TypeScript interfaces for Paymob/Bosta webhook payloads, and update `provision-tenant.sh` to generate `STORE_CORS` and `ADMIN_CORS`.
+Register `eta-tax` as a standalone top-level module in `apps/backend/medusa-config.ts` so `container.resolve("etaTax")` is globally available, and update `apps/backend/src/jobs/background-queue.ts:L145-151` to re-invoke `handleEtaSubmissionFailure()` on worker catch.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect ETA workflow container resolution fallback, Paymob/Bosta webhook route types, and `provision-tenant.sh` environment variable generation.
+- Use `invoke_subagent` to inspect `medusa-config.ts` module registrations and `background-queue.ts` worker catch blocks.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until ETA workflow fallback receives container, webhooks have typed payloads, and provisioning generates CORS env vars.
-- /learn: Persist workflow container fallback and provisioning CORS rules to .gemini/rules.
+- /goal: Execute autonomously until eta-tax is globally resolvable from container and worker failures update DLQ status.
+- /learn: Persist Medusa v2 top-level module registration and worker error handling rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/src/workflows/eta-tax-workflow.ts` (line 49 fallback).
-   - View `apps/backend/src/api/hooks/paymob/route.ts` & `apps/backend/src/api/hooks/bosta/route.ts`.
-   - View `infrastructure/scripts/provision-tenant.sh` (lines 50–68 `.env` generation).
+   - View `apps/backend/medusa-config.ts` (lines 95–120).
+   - View `apps/backend/src/modules/eta-tax/index.ts`.
+   - View `apps/backend/src/jobs/background-queue.ts` (lines 140–155).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/src/workflows/eta-tax-workflow.ts`, `apps/backend/src/modules/paymob/types.ts`, `apps/backend/src/modules/bosta/types.ts`, `apps/backend/src/api/hooks/paymob/route.ts`, `apps/backend/src/api/hooks/bosta/route.ts`, `infrastructure/scripts/provision-tenant.sh`
-   - **ETA Workflow DI Fallback** (`eta-tax-workflow.ts:L49`): Replace `new EtaClient()` fallback (which lacks container context, breaking Redis OAuth2 token caching) with proper container resolution: `const client = container.resolve<EtaTaxModuleService>("etaTax")?.getClient() || new EtaClient(options, container)`. Always pass `container` if instantiating directly.
-   - **Typed Webhook Payloads**: Define `PaymobWebhookPayload` and `BostaWebhookPayload` interfaces in their respective module `types.ts` files. Update webhook route handlers to type incoming bodies (`req.body as PaymobWebhookPayload`) instead of `any`.
-   - **Provisioning CORS Injection** (`provision-tenant.sh`): Update the `.env` template generation section in `provision-tenant.sh` to dynamically derive and write `STORE_CORS`, `ADMIN_CORS`, and `AUTH_CORS` using the tenant's `CUSTOM_DOMAIN` (e.g., `STORE_CORS=https://${CUSTOM_DOMAIN},http://localhost:8000`).
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
-   - Run backend build verification: `cd apps/backend && npm run build`
-   - Run bash syntax check: `bash -n infrastructure/scripts/provision-tenant.sh`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store provisioning CORS rules.
-   - Terminate any running subagents, background dev servers, or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for ETA workflow fallback, webhook types, and provisioning script inspection.
-- [ ] `EtaClient` fallback receives container context — Redis token cache preserved.
-- [ ] Paymob and Bosta webhook route handlers use typed payload interfaces (zero `any` on body).
-- [ ] `provision-tenant.sh` generates `STORE_CORS`, `ADMIN_CORS`, and `AUTH_CORS` matching tenant domain.
-- [ ] All builds and script validations pass cleanly.
-- [ ] All subagents and background tasks are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-
-## Part 3: Storefront UX & Code Polish (Prompt 5)
-
----
-### Developer Prompt 4 (Storefront): Replace Browser `alert()` with Toast Library, Connect Live Medusa Data on Product Pages, & Fix `setTimeout` Memory Leaks
-
-```markdown
-/goal
-
-<TASK>
-Replace native browser `alert()` with `react-hot-toast` / `sonner` in cart context and checkout, connect live Medusa SDK product data in `app/[countryCode]/products/[handle]/page.tsx`, and add cleanup to `setTimeout` in `add-to-cart-button.tsx`.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect all `alert()` call sites in storefront, product handle page data fetching, and `add-to-cart-button.tsx` animation timers.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until storefront uses non-blocking toasts, product pages fetch live Medusa data, and timers clean up on unmount.
-- /learn: Persist storefront error handling and memory leak prevention rules to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/storefront/src/lib/context/cart-context.tsx` (line 185 `alert()`).
-   - View `apps/storefront/src/modules/checkout/components/checkout-view.tsx` (line 90 `alert()`).
-   - View `apps/storefront/src/app/[countryCode]/products/[handle]/page.tsx` (lines 26–34 dummy data).
-   - View `apps/storefront/src/modules/products/components/add-to-cart-button.tsx` (line 49 `setTimeout`).
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/src/lib/context/cart-context.tsx`, `apps/storefront/src/modules/checkout/components/checkout-view.tsx`, `apps/storefront/src/app/[countryCode]/products/[handle]/page.tsx`, `apps/storefront/src/modules/products/components/add-to-cart-button.tsx`
-   - **Replace `alert()` with Toasts**: Import `toast` from `react-hot-toast` or `sonner`. Replace native `alert(error.message)` with `toast.error(error.message)` in `cart-context.tsx` and `checkout-view.tsx` for non-blocking, accessible notifications.
-   - **Live Medusa Product Fetching** (`products/[handle]/page.tsx`): Replace static dummy product data (L26–34) with live API fetching:
+   - Target files: `apps/backend/medusa-config.ts`, `apps/backend/src/jobs/background-queue.ts`
+   - **Top-Level Custom Module Registration** (`medusa-config.ts`):
+     Register `eta-tax` in the `modules: [...]` array as a top-level module (matching the `gemini-ai` registration pattern) alongside its provider registration under `@medusajs/medusa/tax`:
      ```typescript
-     const product = await getProductByHandle(handle, region.id)
-     if (!product) notFound()
+     {
+       resolve: "./src/modules/eta-tax",
+       options: {
+         clientId: process.env.ETA_CLIENT_ID,
+         clientSecret: process.env.ETA_CLIENT_SECRET,
+         taxRegistrationNumber: process.env.ETA_TAX_REGISTRATION_NUMBER,
+         hsmProxyUrl: process.env.ETA_HSM_PROXY_URL,
+         environment: process.env.ETA_ENVIRONMENT || "preprod",
+       },
+     },
      ```
-   - **`setTimeout` Memory Leak Fix** (`add-to-cart-button.tsx`): Wrap the "Added to cart" state timer in `useEffect` with return cleanup:
+     *Rationale*: This enables `container.resolve("etaTax")` (or `container.resolve(ETA_TAX_MODULE)`) across all subscribers and workflows without needing brittle fallback strings.
+
+   - **Worker DLQ Failure Handler Re-invocation** (`background-queue.ts:L145-151`):
+     In the worker catch block for ETA jobs, ensure `handleEtaSubmissionFailure(job.data, error)` is explicitly called before re-throwing or moving to DLQ:
      ```typescript
-     useEffect(() => {
-       if (!isAdded) return
-       const timer = setTimeout(() => setIsAdded(false), 2000)
-       return () => clearTimeout(timer)
-     }, [isAdded])
-     ```
-
-3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run storefront build verification: `cd apps/storefront && npm run build`
-
-4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Terminate any running subagents, background dev servers (e.g. `next dev`) before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for alert call sites, product data fetching, and timer inspection.
-- [ ] Native `alert()` calls replaced with toast notifications (`toast.error()`).
-- [ ] Product handle page fetches live Medusa SDK product data (returns `notFound()` if missing).
-- [ ] `add-to-cart-button.tsx` `setTimeout` cleans up on unmount.
-- [ ] Storefront build completes with exit code 0.
-- [ ] All subagents and background tasks are cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-### Developer Prompt 5: Workspace Protocol Fix, Storefront Dedicated Health Endpoint, & Final Monorepo Verification
-
-```markdown
-/goal
-
-<TASK>
-Update `apps/backend/package.json` to use npm workspace protocol (`"*"`) for `@dtc/shared-types`, create a dedicated `/api/health` endpoint in storefront for Docker healthchecks, and run full monorepo verification.
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` to inspect `apps/backend/package.json` workspace dependencies, Docker Compose storefront healthcheck config, and trigger full monorepo build verification.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until workspace dependencies use npm workspace protocol, storefront has /api/health, and full monorepo compiles clean.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View `apps/backend/package.json` (line 35 `"file:..."`).
-   - View `infrastructure/docker/docker-compose.tenant.yml` (storefront healthcheck line).
-   - Check for `apps/storefront/src/app/api/health/route.ts`.
-
-2. IMPLEMENTATION PHASE:
-   - Target files: `apps/backend/package.json`, `apps/storefront/src/app/api/health/route.ts` (NEW), `infrastructure/docker/docker-compose.tenant.yml`
-   - **Workspace Protocol**: Change `"@dtc/shared-types": "file:../../packages/shared-types"` to `"@dtc/shared-types": "*"` in `apps/backend/package.json` so npm workspace linking works consistently in CI and local dev without duplicate packages.
-   - **Dedicated Health Route**: Create `apps/storefront/src/app/api/health/route.ts`:
-     ```typescript
-     import { NextResponse } from "next/server"
-     export async function GET() {
-       return NextResponse.json({ status: "healthy", timestamp: new Date().toISOString() })
+     // AFTER:
+     catch (error) {
+       await handleEtaSubmissionFailure(job.data, error as Error);
+       throw error;
      }
      ```
-   - **Update Docker Healthcheck**: Change storefront healthcheck in `docker-compose.tenant.yml` from polling `/` to polling `/api/health` — avoiding false failures from homepage redirects or auth guards.
+     *Rationale*: Currently, the worker catches errors without invoking `handleEtaSubmissionFailure()`, bypassing `FAILED_DLQ` status updates in the audit log and suppressing webhook alert dispatches.
 
 3. EMPIRICAL VERIFICATION & TESTING PHASE:
-   - Run shared-types build: `npm run build --workspace=packages/shared-types`
-   - Run backend typecheck & build: `cd apps/backend && npx tsc --noEmit && npm run build`
-   - Run storefront typecheck & build: `cd apps/storefront && npx tsc --noEmit && npm run build`
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
 
 4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
-   - Execute `/learn` to store workspace protocol and healthcheck rules.
+   - Execute `/learn` to store module registration and DLQ rules.
    - Terminate any running subagents, background dev servers, or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for package.json dependencies and healthcheck inspection.
-- [ ] `@dtc/shared-types` uses workspace protocol `"*"`.
-- [ ] Storefront route `/api/health` exists and returns HTTP 200 `{ status: "healthy" }`.
-- [ ] Docker Compose healthcheck updated to target `/api/health`.
-- [ ] Monorepo workspaces compile with zero errors (exit code 0 across all 3 packages).
+- [ ] Subagents delegated for module config and background queue code inspection.
+- [ ] `eta-tax` registered in `medusa-config.ts` `modules: [...]` array.
+- [ ] Worker catch block in `background-queue.ts` invokes `handleEtaSubmissionFailure()`.
+- [ ] Backend typecheck passes with 0 errors (`tsc --noEmit`).
+- [ ] Backend build completes with exit code 0.
+- [ ] All subagents and background tasks are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+### Developer Prompt 4: Bootstrap BullMQ Worker on Server Startup & Add Volumetric Weight Calculation to Bosta Service
+
+```markdown
+/goal
+
+<TASK>
+Add a Medusa loader to bootstrap `startWorker()` from `background-queue.ts` on server startup, and implement volumetric weight calculation (`(L × W × H) / 5000`) in `apps/backend/src/modules/bosta/service.ts`.
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to inspect Medusa v2 loader conventions (`apps/backend/src/loaders/`) and Bosta weight calculation in `service.ts`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until background worker boots automatically on backend startup and Bosta calculates volumetric weight.
+- /learn: Persist Medusa loader startup and volumetric weight calculation rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - Check `apps/backend/src/loaders/` (or create if missing).
+   - View `apps/backend/src/jobs/background-queue.ts` (`startWorker` export).
+   - View `apps/backend/src/modules/bosta/service.ts` (weight calculation methods).
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `apps/backend/src/loaders/worker-loader.ts` (NEW), `apps/backend/src/modules/bosta/service.ts`
+   - **BullMQ Worker Bootstrapping Loader** (`loaders/worker-loader.ts`):
+     Create a Medusa loader that invokes `startWorker()` during backend initialization:
+     ```typescript
+     import { LoaderOptions } from "@medusajs/framework/types"
+     import { startWorker } from "../jobs/background-queue"
+
+     export default async function workerLoader({ container }: LoaderOptions) {
+       console.log("[WorkerLoader] Bootstrapping background queue worker...")
+       startWorker(container)
+     }
+     ```
+     *Rationale*: Ensures background queue workers start automatically when `medusa start` boots the server, preventing jobs from sitting unprocessed in Redis.
+
+   - **Volumetric Weight Calculation** (`bosta/service.ts`):
+     Update rate calculation and shipment creation to compute chargeable weight as `Math.max(actualWeightKg, volumetricWeightKg)` where `volumetricWeightKg = (lengthCm * widthCm * heightCm) / 5000`:
+     ```typescript
+     const volumetricWeightKg = (dimensions.length * dimensions.width * dimensions.height) / 5000;
+     const chargeableWeightKg = Math.max(actualWeightKg, volumetricWeightKg);
+     ```
+     *Rationale*: Aligns with Egyptian courier billing tiers (Bosta, Aramex) where bulky goods are billed based on volumetric weight when it exceeds actual physical weight.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run TypeScript check: `cd apps/backend && npx tsc --noEmit`
+   - Run backend build verification: `cd apps/backend && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Execute `/learn` to store worker loader and volumetric weight rules.
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Subagents delegated for loader conventions and Bosta weight calculation inspection.
+- [ ] `worker-loader.ts` created and registered to bootstrap `startWorker()` on server boot.
+- [ ] `bosta/service.ts` computes `Math.max(actualWeight, volumetricWeight)` using 5000 divisor.
+- [ ] Backend typecheck passes with 0 errors (`tsc --noEmit`).
+- [ ] Backend build completes with exit code 0.
+- [ ] All subagents and background tasks are cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+
+## Part 3: Storefront & Infrastructure Cleanup (Prompt 5)
+
+---
+### Developer Prompt 5: Add Shared Types Dependency to Storefront & Prune Dev Dependencies in Docker Runner Stage
+
+```markdown
+/goal
+
+<TASK>
+Add `"@dtc/shared-types": "*"` to `apps/storefront/package.json` to eliminate duplicate interfaces, and add `RUN npm prune --omit=dev` to `infrastructure/docker/Dockerfile.backend` runner stage.
+</TASK>
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to inspect `apps/storefront/package.json` and `infrastructure/docker/Dockerfile.backend`.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until storefront links shared-types workspace dependency and Dockerfile prunes dev dependencies.
+- /learn: Persist workspace dependency and Docker multi-stage optimization rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION PHASE:
+   - View `apps/storefront/package.json` (dependencies block).
+   - View `infrastructure/docker/Dockerfile.backend` (runner stage).
+
+2. IMPLEMENTATION PHASE:
+   - Target files: `apps/storefront/package.json`, `infrastructure/docker/Dockerfile.backend`
+   - **Storefront Shared Package Dependency Link** (`apps/storefront/package.json`):
+     Add `@dtc/shared-types` using the npm workspace protocol:
+     ```json
+     "dependencies": {
+       "@dtc/shared-types": "*",
+       ...
+     }
+     ```
+     *Rationale*: Eliminates duplicate governorate and phone utility interface declarations across apps by sharing the canonical types from `packages/shared-types`.
+
+   - **Backend Docker Image Pruning** (`Dockerfile.backend`):
+     Add a prune step before copying node modules into the final runner image:
+     ```dockerfile
+     # In builder / runner stage:
+     RUN npm prune --omit=dev
+     ```
+     *Rationale*: Reduces production Docker image size by stripping dev dependencies (TypeScript, compilers, linters) from the runtime container.
+
+3. EMPIRICAL VERIFICATION & TESTING PHASE:
+   - Run shared-types build: `cd packages/shared-types && npm run build`
+   - Run storefront typecheck: `cd apps/storefront && npx tsc --noEmit`
+   - Run storefront build: `cd apps/storefront && npm run build`
+
+4. PROCESS CLEANUP & LEARNING DIRECTIVE (CRITICAL):
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Subagents delegated for storefront package.json and Dockerfile inspection.
+- [ ] `apps/storefront/package.json` includes `"@dtc/shared-types": "*"`.
+- [ ] `Dockerfile.backend` includes `npm prune --omit=dev` in runner stage.
+- [ ] All monorepo projects (`shared-types`, `apps/backend`, `apps/storefront`) pass typecheck and build cleanly with exit code 0.
 - [ ] All subagents and background tasks are cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
