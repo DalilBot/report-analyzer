@@ -1,78 +1,97 @@
-# Master Storefront Feature & UX Fixes Prompt Pack (`PROMPT_SEQUENCE_STOREFRONT_NAVIGATION_PAGES_LOCALE.md`)
+# Turnkey White-Label Commercial Transformation Prompt Pack (`PROMPT_SEQUENCE_STOREFRONT_TURNKEY_TRANSFORMATION.md`)
 
-This prompt pack contains **4 targeted developer prompts** engineered for **Google Antigravity Agentic IDE** to implement the required missing core pages, interactive search submission, cross-tab synced animated locale switching, and a dedicated product catalog page.
+This prompt pack contains **3 sequentially executable master developer prompts** engineered for **Google Antigravity Agentic IDE** to systematically resolve all 62 assessed features and defects cataloged in the `STOREFRONT_COMPREHENSIVE_GAP_AUDIT_REPORT.md`, elevating the storefront from a **6.5/10.0 prototype to a 10.0/10.0 turnkey white-label e-commerce product**:
+
+- **Prompt 1 (Phase 1 — Core Commerce, Variant Matrix & Critical CRO)**:
+  1. Dynamic multi-attribute variant selector (Size, Color, Capacity, Material) on PDP with live price/SKU updates.
+  2. Mobile sticky bottom "Add to Cart" floating bar with `IntersectionObserver`.
+  3. Resolve missing 404 routes (`/shipping`, `/returns`, `/collections/[handle]`).
+  4. Redesign `not-found.tsx` and `error.tsx` to match the warm luxury palette (`#FDFBF7`, `#0F4C5C`).
+  5. Apply `unicodeBidi: "plaintext"` to all checkout and form inputs.
+
+- **Prompt 2 (Phase 2 — Customer Auth, Social Proof & Retention Portal)**:
+  1. Dedicated customer authentication pages (`/login`, `/register`, `/forgot-password`) connected to Medusa Auth SDK (`/store/auth`).
+  2. Customer Reviews & 5-Star Social Proof Engine with aggregate scorecards, verified buyer badges, and photo review gallery.
+  3. Interactive multi-address book management (Add/Edit/Delete, Default Shipping vs Billing).
+  4. Visual 4-stage courier order tracking timeline (`/account/orders/[id]`).
+  5. Self-service customer return & refund request workflow (`/account/returns`).
+
+- **Prompt 3 (Phase 3 — Merchandising, Mega-Menu & SEO Expansion)**:
+  1. Hierarchical Mega-Menu dropdown with multi-level nested categories and thumbnail banners.
+  2. Mobile bottom navigation dock (Home, Categories, Search, Cart, Account).
+  3. "Frequently Bought Together" & Bundle Discount engine on PDP.
+  4. Dynamic `sitemap.ts`, `robots.ts`, OpenGraph social cards, and `BreadcrumbList` JSON-LD schemas.
+  5. Full monorepo typecheck and production build validation (`tsc` & `next build`).
 
 ---
 
-## 📋 Prompt Sequence Overview
-
-| Prompt | Target Scope | Key Technical Implementations |
-| :--- | :--- | :--- |
-| **Prompt 1** | **Search Submission & Dedicated Results Page** | Enter key & search icon navigation to `/[countryCode]/search?q=...`, dedicated search results page with filter drawer, sort options, and empty state. |
-| **Prompt 2** | **Cross-Tab Synced & Animated Locale Switcher** | Animated directional layout flip (`dir` & font swap with smooth CSS opacity transition), 30-day cookie persistence, and `BroadcastChannel("medusa_locale_sync")` cross-tab live synchronization. |
-| **Prompt 3** | **Dedicated Products Catalog & Filter Page** | `/[countryCode]/products/page.tsx` with category filters (الكل, أزياء, إلكترونيات, منزل), price range slider, sort dropdown (الأعلى تقييماً, الأقل سعراً), and pagination. |
-| **Prompt 4** | **Content & Information Sub-Pages** | `/[countryCode]/about` (من نحن), `/[countryCode]/contact` (اتصل بنا مع نموذج تواصل), `/[countryCode]/faq` (الأسئلة الشائعة), `/[countryCode]/privacy` (سياسة الخصوصية), `/[countryCode]/terms` (الشروط والأحكام). |
-
----
-
-## 🔍 PROMPT 1: Search Submission & Dedicated Results Page
+## 🚀 PROMPT 1: Core Commerce, Variant Matrix, Mobile Sticky Bar & Route Fixes (Phase 1)
 
 ```markdown
 /goal
 
 <TASK>
-Implement search submission navigation on Enter key and search icon click in `SmartSearchBar`, and create a dedicated search results page at `apps/storefront/src/app/[countryCode]/search/page.tsx`.
+Execute Phase 1 of the Turnkey Commercial Transformation:
+1. Multi-Attribute Variant Matrix: In `apps/storefront/src/app/[countryCode]/products/[handle]/page.tsx` and product components, dynamically parse all product options (Size, Color, Storage Capacity, Material, Volume) from the Medusa payload. Render interactive pill/swatch selectors with out-of-stock disabled states, dynamically updating the active price, SKU, and variant ID sent to the Add-to-Cart button.
+2. Mobile Sticky Bottom "Add to Cart" Bar: Implement an `IntersectionObserver`-driven floating bottom dock on mobile viewports featuring product thumbnail, selected variant price, and full-width "أضف للسلة" button when the main CTA scrolls out of view.
+3. Missing Sub-Pages: Create `src/app/[countryCode]/shipping/page.tsx`, `src/app/[countryCode]/returns/page.tsx`, and `src/app/[countryCode]/collections/[handle]/page.tsx`.
+4. Theme Harmonization in Error Boundaries: Redesign `src/app/not-found.tsx` and `src/app/error.tsx` to use the warm luxury palette (`#FDFBF7`, `#0F4C5C`), wrapping them in proper headers and footers with 100% Arabic default copy.
+5. BiDi Form Input Isolation: Apply `dir="auto"` and `style={{ unicodeBidi: "plaintext", textAlign: "start" }}` across all inputs in `checkout-view.tsx` and contact forms.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Storefront Search Specialist", TypeName: "research") to inspect `apps/storefront/src/modules/search/components/smart-search-bar.tsx` and check Next.js App Router query parameter routing patterns.
+- Use `invoke_subagent` (Role: "PDP & Layout Specialist", TypeName: "research") to inspect `src/app/[countryCode]/products/[handle]/page.tsx`, `not-found.tsx`, `error.tsx`, and `checkout-view.tsx`.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until pressing Enter or clicking search icon navigates to the dedicated search results page.
-- /learn: Persist search query routing and results page standards to .gemini/rules.
+- /goal: Execute autonomously until variant selection is fully dynamic, mobile sticky bar operates smoothly, and all 404 routes are resolved.
+- /learn: Persist multi-attribute variant matrix and mobile sticky CTA patterns to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/storefront/src/modules/search/components/smart-search-bar.tsx`.
-   - Check existing search input handlers and form wrappers.
+   - View `apps/storefront/src/app/[countryCode]/products/[handle]/page.tsx` (inspect variant handling).
+   - View `apps/storefront/src/app/not-found.tsx` and `src/app/error.tsx` (inspect dark mode classes).
+   - View `apps/storefront/src/modules/checkout/components/checkout-view.tsx` (check input fields).
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/src/modules/search/components/smart-search-bar.tsx`, `apps/storefront/src/app/[countryCode]/search/page.tsx` (NEW), `apps/storefront/src/modules/search/templates/search-results-template.tsx` (NEW).
-   - **Search Bar Submission Wiring** (`smart-search-bar.tsx`):
-     Wrap the search input in a `<form onSubmit={handleFormSubmit}>` element:
+   - **Dynamic Variant Selector Component** (`src/modules/products/components/product-variant-selector.tsx`):
      ```tsx
-     const router = useRouter();
-     const handleFormSubmit = (e: React.FormEvent) => {
-       e.preventDefault();
-       if (!query.trim()) return;
-       setIsOpen(false);
-       router.push(`/${countryCode || "eg"}/search?q=${encodeURIComponent(query.trim())}`);
-     };
+     // Dynamically groups options (e.g. Size: S/M/L, Color: Black/White)
+     // Manages selectedOptions state Record<string, string>
+     // Finds matching variant: product.variants.find(v => matchesAllOptions)
+     // Passes resolved variantId, price, and inventory status to AddToCartButton
      ```
-     Make the search icon inside the input clickable as a submit button (`type="submit"`).
-   - **Dedicated Search Results Page** (`app/[countryCode]/search/page.tsx`):
-     Create a Server Component that reads `searchParams.q`, fetches matching products from Medusa SDK or `/api/products`, and renders:
-     - Header: "نتائج البحث عن: [Query]" / "Search results for: [Query]" with result count badge.
-     - Product Grid: Responsive cards (2 cols mobile, 4 cols desktop) with dual EGP prices and Quick-Add.
-     - Sort Dropdown: By Price (Low/High), Newest, and Best Selling.
-     - Empty State: If 0 results, show "لم نجد نتائج مطابقة" with 4 trending recommended products.
+   - **Mobile Sticky CTA Bar** (`src/modules/products/components/mobile-sticky-bar.tsx`):
+     ```tsx
+     // Uses IntersectionObserver targeting the main PDP AddToCart button
+     // Slides up smoothly from bottom on mobile viewports (< 768px)
+     // Displays thumbnail, active variant price, and Quick-Add CTA
+     ```
+   - **Missing Sub-Page Routes**:
+     - `src/app/[countryCode]/shipping/page.tsx`: Shipping policy detailing 27-governorate delivery times and Bosta tracking.
+     - `src/app/[countryCode]/returns/page.tsx`: 14-day statutory return & replacement policy under Consumer Protection Law.
+     - `src/app/[countryCode]/collections/[handle]/page.tsx`: Dynamic collection landing page filtering products by collection handle.
+   - **Harmonize 404 & Error Pages** (`not-found.tsx`, `error.tsx`):
+     - Replace dark slate styling with warm linen (`bg-[#FDFBF7]`), Nile Teal CTA (`bg-[#0F4C5C]`), and Arabic typography.
+   - **BiDi Isolation**:
+     - Add `style={{ unicodeBidi: "plaintext", textAlign: "start" }}` to address and phone inputs.
 
 3. EMPIRICAL VERIFICATION:
    - Run `cd apps/storefront && npx tsc --noEmit`.
    - Run `cd apps/storefront && npm run build`.
-   - Test pressing Enter on query "تيشرت" -> Navigates to `/eg/search?q=%D8%AA%D9%8A%D8%B4%D8%B1%D8%AA`.
+   - Verify `/eg/shipping`, `/eg/returns`, and `/eg/collections/featured` return HTTP 200.
 
 4. PROCESS CLEANUP:
    - Terminate any running subagents or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for search bar and route inspection.
-- [ ] Pressing Enter or clicking search icon redirects to `/[countryCode]/search?q=...`.
-- [ ] `app/[countryCode]/search/page.tsx` exists, renders search query, and displays matching products.
-- [ ] Empty search state displays recommendations rather than blank screen.
+- [ ] Subagents delegated for PDP and route inspection.
+- [ ] PDP dynamically renders option selectors (Size, Color, etc.) with real-time price & variant ID switching.
+- [ ] Mobile sticky bottom Add-to-Cart bar triggers on viewport scroll.
+- [ ] `/shipping`, `/returns`, and `/collections/[handle]` routes are live (zero 404s).
+- [ ] `not-found.tsx` and `error.tsx` match the warm luxury palette.
 - [ ] Storefront builds cleanly with exit code 0.
 - [ ] All subagents cleanly terminated.
 </ACCEPTANCE_CRITERIA>
@@ -80,84 +99,52 @@ Implement search submission navigation on Enter key and search icon click in `Sm
 
 ---
 
-## 🌐 PROMPT 2: Cross-Tab Synced & Animated Locale Switcher
+## 🔐 PROMPT 2: Customer Auth, Social Proof & Retention Portal (Phase 2)
 
 ```markdown
 /goal
 
 <TASK>
-Create a smooth, animated Language/Locale Switcher that dynamically flips layout direction (`dir="rtl"` / `dir="ltr"`), transitions fonts (Cairo ↔ Inter) with an animated cross-fade, persists the choice to a 30-day cookie (`medusa_locale`), and synchronizes instantly across all open browser tabs via `BroadcastChannel("medusa_locale_sync")`.
+Execute Phase 2 of the Turnkey Commercial Transformation:
+1. Dedicated Customer Authentication Routes: Create `src/app/[countryCode]/login/page.tsx`, `src/app/[countryCode]/register/page.tsx`, and `src/app/[countryCode]/forgot-password/page.tsx` integrated with Medusa customer auth endpoints (`/store/auth/customer/emailpass` and `/store/customers`).
+2. Customer Reviews & 5-Star Social Proof Engine: In PDP (`/products/[handle]`), build an aggregate review scorecard (e.g. 4.8/5.0 with rating breakdown bars), verified buyer badges (`مشتري موثق`), review filter tabs, photo gallery, and an interactive "أضف تقييمك" review submission modal.
+3. Multi-Address Book Management: In `/account`, build an interactive address manager allowing customers to Add New Address, Edit, Delete, and toggle Default Shipping vs Default Billing address.
+4. Visual Courier Tracking Timeline: In `/account/orders/[id]`, implement a 4-stage tracking visualizer (`تم استلام الطلب` -> `قيد التجهيز في المستودع` -> `في الطريق مع المندوب` -> `تم التوصيل بنجاح`) with tracking code copy and Bosta AWB status details.
+5. Self-Service Returns Workflow: In `src/app/[countryCode]/account/returns/page.tsx`, build a step-by-step return request form (select delivered item, reason for return, photo upload, pickup date confirmation).
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Localization & State Specialist", TypeName: "research") to inspect `apps/storefront/src/app/[countryCode]/layout.tsx`, `apps/storefront/src/lib/context/`, and cookie management in the storefront.
+- Use `invoke_subagent` (Role: "Auth & Customer Portal Specialist", TypeName: "research") to inspect Medusa auth client methods, account views in `src/modules/account/`, and customer review schemas.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until language switching is animated, persistent, and synchronizes across open tabs in real-time.
-- /learn: Persist locale synchronization and directional animation rules to .gemini/rules.
+- /goal: Execute autonomously until customer authentication, reviews, address book, and visual tracking are fully interactive.
+- /learn: Persist Medusa customer session management and visual courier tracking timeline rules to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - View `apps/storefront/src/app/[countryCode]/layout.tsx` and `apps/storefront/src/app/layout.tsx`.
-   - View how locale is currently toggled in header/navbar components.
+   - View `apps/storefront/src/modules/account/components/account-view.tsx`.
+   - Check Medusa Auth API routes in `apps/backend/src/api/`.
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/src/lib/context/locale-context.tsx` (NEW), `apps/storefront/src/modules/layout/components/locale-toggle.tsx` (NEW/UPDATE), `apps/storefront/src/app/[countryCode]/layout.tsx`, `apps/storefront/src/app/globals.css`.
-   - **Locale Context & Cross-Tab Broadcast** (`locale-context.tsx`):
-     ```typescript
-     export const LocaleContext = createContext<...>(...);
-
-     export function LocaleProvider({ children, initialLocale }: { children: React.ReactNode; initialLocale: string }) {
-       const [locale, setLocale] = useState(initialLocale);
-       const router = useRouter();
-       const pathname = usePathname();
-
-       useEffect(() => {
-         const channel = new BroadcastChannel("medusa_locale_sync");
-         channel.onmessage = (event) => {
-           if (event.data?.locale && event.data.locale !== locale) {
-             setLocale(event.data.locale);
-             // Smoothly route to matching localized path in other tabs
-             const segments = pathname.split("/");
-             segments[1] = event.data.locale;
-             router.push(segments.join("/"));
-           }
-         };
-         return () => channel.close();
-       }, [locale, pathname, router]);
-
-       const changeLocale = (newLocale: "eg" | "en") => {
-         document.cookie = `medusa_locale=${newLocale}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
-         const channel = new BroadcastChannel("medusa_locale_sync");
-         channel.postMessage({ locale: newLocale });
-         channel.close();
-         
-         const segments = pathname.split("/");
-         segments[1] = newLocale;
-         router.push(segments.join("/"));
-       };
-
-       return (
-         <LocaleContext.Provider value={{ locale, changeLocale, isRtl: locale === "eg" || locale === "ar" }}>
-           {children}
-         </LocaleContext.Provider>
-       );
-     }
-     ```
-   - **Smooth CSS Animation for Direction Flips** (`globals.css`):
-     ```css
-     .locale-transition-wrapper {
-       transition: opacity 250ms cubic-bezier(0.16, 1, 0.3, 1), transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
-     }
-     ```
-   - **Interactive Language Toggle Button** (`locale-toggle.tsx`):
-     Create a sleek floating or header pill (`العربية | English`) with tactile spring animation on toggle.
+   - **Auth Pages** (`src/app/[countryCode]/login`, `/register`, `/forgot-password`):
+     - High-conversion luxury login/register cards with password visibility toggle, Egyptian phone number field, and smooth redirect to `/account` on success.
+   - **Customer Reviews Engine** (`src/modules/products/components/product-reviews.tsx`):
+     - Renders rating summary (e.g. ★ 4.9 / 5.0 بناءً على 124 تقييم).
+     - Breakdown progress bars for 5, 4, 3, 2, 1 stars.
+     - Review cards with verified buyer badge (`مشتري موثق`), date, star rating, verified feedback, and user photos.
+     - Interactive review modal with star selector and image upload.
+   - **Address Book Manager** (`src/modules/account/components/address-book.tsx`):
+     - Interactive grid of saved addresses with "تعيين كعنوان افتراضي", "تعديل", and "حذف" actions.
+   - **Visual Courier Tracking Timeline** (`src/app/[countryCode]/account/orders/[id]/page.tsx`):
+     - Animated 4-step progress line with icons, current step highlighted in Nile Teal, estimated delivery date, and live Bosta AWB reference.
+   - **Self-Service Returns Portal** (`src/app/[countryCode]/account/returns/page.tsx`):
+     - Return request generator allowing customers to request item returns within 14 days under Consumer Protection Law.
 
 3. EMPIRICAL VERIFICATION:
-   - Open Tab 1 (`http://localhost:3000/eg`) and Tab 2 (`http://localhost:3000/eg`).
-   - Switch language to English in Tab 1 -> Tab 2 must automatically switch to `/en` with smooth transition.
+   - Test navigating to `/eg/login`, `/eg/register`, `/eg/account/orders/ord_123`, and `/eg/account/returns`.
+   - Verify review component renders cleanly on PDP.
    - Run `cd apps/storefront && npx tsc --noEmit && npm run build`.
 
 4. PROCESS CLEANUP:
@@ -165,139 +152,79 @@ Create a smooth, animated Language/Locale Switcher that dynamically flips layout
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for locale context and layout inspection.
-- [ ] Switching language updates URL path, sets 30-day `medusa_locale` cookie, and flips `dir`/font.
-- [ ] `BroadcastChannel("medusa_locale_sync")` syncs language change across all open tabs instantly.
-- [ ] Transition between RTL and LTR has smooth CSS opacity/transform animation without jarring flickers.
-- [ ] Storefront build completes with exit code 0.
+- [ ] Subagents delegated for auth and customer portal inspection.
+- [ ] Dedicated `/login`, `/register`, and `/forgot-password` pages are live and functional.
+- [ ] PDP features rich 5-star customer reviews, verified badges, and review modal.
+- [ ] Address book allows adding, editing, and deleting customer addresses.
+- [ ] Order detail page features 4-stage visual courier tracking timeline.
+- [ ] Storefront builds cleanly with exit code 0.
 - [ ] All subagents cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
 
 ---
 
-## 🛍️ PROMPT 3: Dedicated Products Catalog & Filter Page
+## 🛍️ PROMPT 3: Merchandising, Mega-Menu, Mobile Dock & SEO Expansion (Phase 3)
 
 ```markdown
 /goal
 
 <TASK>
-Create a full-featured, dedicated Product Catalog page at `apps/storefront/src/app/[countryCode]/products/page.tsx` with category filters, price range sliders, sorting, grid/list toggles, and responsive pagination.
+Execute Phase 3 of the Turnkey Commercial Transformation:
+1. Hierarchical Mega-Menu Navigation: In `src/modules/layout/components/header.tsx`, build a multi-level luxury mega-menu with rich dropdown panels for main categories (أزياء, إلكترونيات, منزل وديكور, عطور), sub-categories, featured brands, and promotional thumbnail banners.
+2. Mobile Bottom Navigation Dock: Build a sticky bottom navigation dock for mobile screens (`< 768px`) with 5 tactile action tabs: `الرئيسية` (Home), `التصنيفات` (Categories), `البحث` (Search), `السلة` (Cart with badge), and `حسابي` (Account).
+3. "Frequently Bought Together" & Bundle Engine: In PDP (`/products/[handle]`), implement a bundle cross-sell card ("اشترِ معاً ووفر 10%") that lets users add the main product + 1 compatible accessory to cart in a single click with bundle discount calculation.
+4. Dynamic SEO & SERP Expansion:
+   - Create `src/app/sitemap.ts` dynamically generating URLs for all products, categories, and static pages.
+   - Create `src/app/robots.ts` with standard crawler directives.
+   - Embed Schema.org `BreadcrumbList` and root `WebSite` with `SearchAction` JSON-LD schemas in `src/app/[countryCode]/layout.tsx`.
+   - Add dynamic OpenGraph and Twitter card metadata generators on all product pages.
+5. Monorepo Build & Turnkey Verification: Run full TypeScript compilation and Next.js production builds across all workspaces.
 </TASK>
 
 <SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Catalog Architecture Specialist", TypeName: "research") to inspect product fetching in `apps/storefront/src/lib/data/products.ts` and Medusa v2 store products query parameters.
+- Use `invoke_subagent` (Role: "Merchandising & SEO Specialist", TypeName: "research") to inspect header mega-menu markup, mobile layout triggers, and Next.js 15 Metadata/Sitemap APIs.
 </SUBAGENT_DELEGATION_DIRECTIVE>
 
 <ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until the dedicated products catalog page is live, interactive, and filterable.
-- /learn: Persist product catalog layout and filtering standards to .gemini/rules.
+- /goal: Execute autonomously until mega-menu, mobile dock, bundle engine, and SEO automation are fully implemented.
+- /learn: Persist Next.js 15 sitemap automation and mega-menu navigation standards to .gemini/rules.
 </ANTIGRAVITY_SLASH_COMMANDS>
 
 <ANTIGRAVITY_WORKFLOW>
 1. RESEARCH & INSPECTION PHASE:
-   - Check `apps/storefront/src/lib/data/products.ts`.
-   - Check if `apps/storefront/src/app/[countryCode]/products/page.tsx` exists (currently only `[handle]/page.tsx` exists).
+   - View `apps/storefront/src/modules/layout/components/header.tsx`.
+   - View `apps/storefront/src/app/[countryCode]/layout.tsx`.
 
 2. IMPLEMENTATION PHASE:
-   - Target files: `apps/storefront/src/app/[countryCode]/products/page.tsx` (NEW), `apps/storefront/src/modules/products/templates/catalog-template.tsx` (NEW), `apps/storefront/src/modules/products/components/catalog-filters.tsx` (NEW).
-   - **Catalog Page Implementation** (`app/[countryCode]/products/page.tsx`):
-     - Server Component reading `searchParams` (`category`, `sort`, `minPrice`, `maxPrice`, `page`).
-     - Fetches live products from Medusa SDK or fallback dataset.
-     - Features:
-       - **Category Sidebar & Mobile Drawer**: `الكل`, `أزياء وملابس`, `إلكترونيات`, `منزل وديكور`, `عطور وعناية`.
-       - **Price Range Filter**: Interactive slider or min/max inputs in EGP (`ج.م`).
-       - **Sort Select Dropdown**: `الأحدث وصولاً` (Newest), `السعر: من الأقل للأعلى` (Price: Low to High), `السعر: من الأعلى للأقل` (Price: High to Low), `الأعلى تقييماً` (Top Rated).
-       - **Active Filter Pills**: Shows removable badge tags for active filters (e.g. `أزياء ✕`, `أقل من 500 ج.م ✕`).
-       - **Product Grid**: Luxury responsive cards with hover zoom, discount badges, and Quick-Add button.
-       - **Pagination / Load More**: Clean numeric pagination or smooth "عرض المزيد من المنتجات" button.
+   - **Hierarchical Mega-Menu** (`src/modules/layout/components/mega-menu.tsx`):
+     - Hover-activated animated dropdowns featuring sub-category lists, trending tags, and promotional hero banners with CTAs.
+   - **Mobile Bottom Navigation Dock** (`src/modules/layout/components/mobile-nav-dock.tsx`):
+     - Fixed `bottom-0 start-0 end-0 z-40` glassmorphic dock with active tab indicators and real-time cart badge pulse.
+   - **Frequently Bought Together Bundle Engine** (`src/modules/products/components/product-bundle-upsell.tsx`):
+     - Checkbox-driven bundle builder calculating combined bundle price and instant 10% bundle savings.
+   - **Automated Sitemap & Robots** (`src/app/sitemap.ts` & `src/app/robots.ts`):
+     - Generates valid XML sitemap of all active localized routes (`/eg`, `/en`, `/products`, `/collections`, etc.).
+   - **SERP BreadcrumbList & WebSite Schema** (`src/app/[countryCode]/layout.tsx`):
+     - Embeds Schema.org `BreadcrumbList` and `SearchAction` for Google rich snippets.
 
-3. EMPIRICAL VERIFICATION:
-   - Navigate to `http://localhost:3000/eg/products` -> Must load catalog grid with sidebar filters.
-   - Filter by category and sort -> URL updates (`/eg/products?category=fashion&sort=price_asc`) and products filter accurately.
-   - Run `cd apps/storefront && npx tsc --noEmit && npm run build`.
+3. EMPIRICAL VERIFICATION & BUILD:
+   - Shared Types: `cd packages/shared-types && npm run build`
+   - Storefront Typecheck: `cd apps/storefront && npx tsc --noEmit`
+   - Storefront Build: `cd apps/storefront && npm run build`
+   - Verify `http://localhost:3000/sitemap.xml` and `http://localhost:3000/robots.txt` respond with valid schema.
 
 4. PROCESS CLEANUP:
    - Terminate any running subagents or processes before completing turn.
 </ANTIGRAVITY_WORKFLOW>
 
 <ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for catalog page and data fetching inspection.
-- [ ] `app/[countryCode]/products/page.tsx` exists and serves the full catalog.
-- [ ] Filtering by category, price, and sorting works without breaking URL state.
-- [ ] Responsive filter drawer on mobile and sticky sidebar on desktop.
-- [ ] Storefront build completes with exit code 0.
-- [ ] All subagents cleanly terminated.
-</ACCEPTANCE_CRITERIA>
-```
-
----
-
-## 📄 PROMPT 4: Complete Information & Content Sub-Pages (About, Contact, FAQ, Terms, Privacy)
-
-```markdown
-/goal
-
-<TASK>
-Implement all missing institutional and customer support sub-pages with luxury typography, 100% authentic Arabic copy, responsive layouts, and interactive contact forms:
-1. `apps/storefront/src/app/[countryCode]/about/page.tsx` (من نحن - قصة المتجر والجودة المصرية)
-2. `apps/storefront/src/app/[countryCode]/contact/page.tsx` (اتصل بنا - نموذج تواصل تفاعلي، بيانات الاتصال، وأوقات العمل)
-3. `apps/storefront/src/app/[countryCode]/faq/page.tsx` (الأسئلة الشائعة - أكورديون تفاعلي للشحن، الدفع، والإرجاع)
-4. `apps/storefront/src/app/[countryCode]/privacy/page.tsx` (سياسة الخصوصية وحماية البيانات)
-5. `apps/storefront/src/app/[countryCode]/terms/page.tsx` (الشروط والأحكام وسياسة الإرجاع)
-</TASK>
-
-<SUBAGENT_DELEGATION_DIRECTIVE>
-- Use `invoke_subagent` (Role: "Content & Sub-Pages Specialist", TypeName: "research") to check footer and navigation links across `apps/storefront`.
-</SUBAGENT_DELEGATION_DIRECTIVE>
-
-<ANTIGRAVITY_SLASH_COMMANDS>
-- /goal: Execute autonomously until all 5 institutional sub-pages are created, styled, and linked in header/footer.
-- /learn: Persist institutional sub-page templates and contact form standards to .gemini/rules.
-</ANTIGRAVITY_SLASH_COMMANDS>
-
-<ANTIGRAVITY_WORKFLOW>
-1. RESEARCH & INSPECTION PHASE:
-   - View footer links in `apps/storefront/src/modules/layout/components/footer.tsx` (or equivalent).
-   - Identify all dead 404 links.
-
-2. IMPLEMENTATION PHASE:
-   - Target files:
-     - `apps/storefront/src/app/[countryCode]/about/page.tsx` (NEW)
-     - `apps/storefront/src/app/[countryCode]/contact/page.tsx` (NEW)
-     - `apps/storefront/src/app/[countryCode]/faq/page.tsx` (NEW)
-     - `apps/storefront/src/app/[countryCode]/privacy/page.tsx` (NEW)
-     - `apps/storefront/src/app/[countryCode]/terms/page.tsx` (NEW)
-     - `apps/storefront/src/modules/layout/components/footer.tsx` (Update links)
-   - **About Page** (`about/page.tsx`):
-     - Brand story celebrating authentic Egyptian craftsmanship, premium cotton, and local manufacturing.
-     - Visual stat cards: "توصيل لـ 27 محافظة", "أكثر من 10,000 عميل سعيد", "جودة مصرية 100%".
-   - **Contact Us Page** (`contact/page.tsx`):
-     - Interactive form: Name, Email, Egyptian Phone Number (`010...`), Subject, and Message.
-     - Direct WhatsApp quick-chat button (`تواصل فوري عبر واتساب`).
-     - Egyptian support hours & location (Cairo, Egypt).
-   - **FAQ Page** (`faq/page.tsx`):
-     - Interactive collapsible accordion (الشحن والتوصيل، طرق الدفع والتقسيط، الاستبدال والاسترجاع خلال 14 يوم).
-   - **Terms & Privacy Pages** (`privacy/page.tsx` & `terms/page.tsx`):
-     - Formatted legal copy compliant with Egyptian e-commerce regulations and consumer protection law (قانون حماية المستهلك المصري رقم 181 لسنة 2018).
-   - **Footer Navigation Update**:
-     - Connect all footer and header links to these new routes so zero 404s exist across the entire site.
-
-3. EMPIRICAL VERIFICATION:
-   - Click every link in footer (`من نحن`, `اتصل بنا`, `الأسئلة الشائعة`, `سياسة الخصوصية`, `الشروط`) -> Confirm HTTP 200 on all.
-   - Run `cd apps/storefront && npx tsc --noEmit && npm run build`.
-
-4. PROCESS CLEANUP:
-   - Terminate any running subagents or processes before completing turn.
-</ANTIGRAVITY_WORKFLOW>
-
-<ACCEPTANCE_CRITERIA>
-- [ ] Subagents delegated for sub-pages and footer link inspection.
-- [ ] All 5 sub-pages (`/about`, `/contact`, `/faq`, `/privacy`, `/terms`) created and render with luxury styling.
-- [ ] Contact page features interactive form and direct WhatsApp CTA.
-- [ ] FAQ page features animated collapsible accordion.
-- [ ] Footer and header links connected with zero 404 dead links.
-- [ ] Storefront build completes with exit code 0.
+- [ ] Subagents delegated for mega-menu and SEO inspection.
+- [ ] Header features rich multi-level category mega-menu.
+- [ ] Mobile bottom navigation dock is responsive and active on mobile viewports.
+- [ ] PDP features interactive "Frequently Bought Together" bundle builder.
+- [ ] `sitemap.xml` and `robots.txt` dynamically generated.
+- [ ] Entire storefront passes typecheck and production build with exit code 0.
 - [ ] All subagents cleanly terminated.
 </ACCEPTANCE_CRITERIA>
 ```
