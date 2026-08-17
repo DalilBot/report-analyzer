@@ -1,154 +1,258 @@
-# Master UI/UX & Design Transformation Prompt (`PROMPT_MASTER_LUXURY_UI_TRANSFORMATION.md`)
+# 🏛️ ULTIMATE MASTER DEVELOPER EXECUTION SUITE (`FINAL_MASTER_DEVELOPER_EXECUTION_SUITE.md`)
 
-This prompt is engineered for **Google Antigravity Agentic IDE** to perform a complete, top-tier aesthetic, linguistic, and architectural transformation across both the Next.js Storefront and Medusa Admin dashboard.
+This is the **complete, unified, copy-pasteable execution prompt sequence** for your developer agent in Google Antigravity. It merges:
+1. **The Definitive Backend & Checkout Fixes** (P0 order completion, seed shipping options, tax-exclusive discount math).
+2. **The 100% Arabic-First Luxury UI & Jargon Purge** (Zero English default, zero developer text like `(Paymob/Bosta)`).
+3. **The Granular Dynamic Animations Engine** (Full JSON customizability of speeds, easings, and transitions for every component).
+4. **The Ranked Multi-Armed Bandits (R-MAB) + NLP Semantic Search Engine** (Stemming, Egyptian colloquial synonyms, typo tolerance, Thompson Sampling learning-to-rank).
 
 ---
+
+## 📋 Execution Roadmap (4 Sequential Phases)
+
+| Phase | Focus Area | Technical Scope | Target Deliverables |
+| :--- | :--- | :--- | :--- |
+| **Phase 1** | **Backend Core, Seed & Checkout Wiring** | Link shipping options to Egypt service zone, initiate payment collections, fix discount base math | Real orders succeed end-to-end, zero 400 errors |
+| **Phase 2** | **Ranked Bandits (R-MAB) & NLP AI Search** | Plural stemming (`shirts` ↔ `shirt`), Egyptian dialect graph (`كوتشي`), Thompson Sampling R-MAB ranking | Instant intelligent search with zero dead ends |
+| **Phase 3** | **Luxury UI, 100% Arabic Default & Jargon Purge** | Porcelain/Nile Teal/Emerald palette, purge all `(Paymob/Bosta)`, 100% Arabic defaults everywhere | Luxury aesthetic, zero English letters by default |
+| **Phase 4** | **Configurable Dynamic Animation Engine & Final Build** | `site-config.json` motion engine, hover scale, cart drawer slide, and monorepo build sign-off | Fluid 60fps micro-animations, 100% clean builds |
+
+---
+
+# 🚀 PHASE 1: Backend Core, Seed & Checkout Wiring
 
 ```markdown
 /goal
 
-# 🏛️ MISSION: 100% Arabic-First Luxury E-Commerce Transformation & Cognitive Design Overhaul
+# TASK: Fix Egypt Shipping Options, Checkout Payment Collection & Promotions Discount Math
 
-You are a Principal Product Designer and Staff Frontend/UI Engineer with mastery in high-conversion luxury e-commerce (think Apple, Stripe, Linear, SSENSE, Farfetch Arabia).
+Resolve the last remaining backend and order placement blockers:
+1. In `apps/backend/src/scripts/seed-egypt-region.ts`, ensure that the fulfillment set and service zone covering Egypt (`countries: ["eg"]`) are properly created, linked to the stock location and the Default Sales Channel, and that the 2 shipping options (`Bosta Standard Delivery` and `Bosta Express Delivery`) are created inside this service zone with valid EGP prices (`amount: 4500` / `amount: 6000`) so `GET /store/shipping-options?cart_id=:id` returns both options for any cart created in the Egypt region (`reg_01KYH...`).
+2. In `apps/storefront/src/modules/checkout/components/checkout-view.tsx`, update the checkout submission sequence before calling `/store/carts/:id/complete`:
+   - Step A: Add shipping method: `POST /store/carts/${cart.id}/shipping-methods` with `{ option_id: selectedShippingOptionId }`.
+   - Step B: Create payment collection: `POST /store/payment-collections` with `{ cart_id: cart.id }`.
+   - Step C: Create payment session: `POST /store/payment-collections/${paymentCollectionId}/payment-sessions` with `{ provider_id: selectedPaymentProviderId || "pp_system_default" }`.
+   - Step D: Complete cart: `POST /store/carts/${cart.id}/complete`.
+3. In `apps/backend/src/modules/eta-tax/payload-builder.ts` and checkout display, ensure percentage discounts (e.g. `EGYPT10` 10% off) calculate and report against the **tax-exclusive subtotal base** (e.g., subtotal 51800 piastres -> 10% discount = **5180 piastres / 51.80 EGP**, instead of the tax-inflated 5905.2 piastres).
 
-Your mission is to completely redesign and reshape the UI/UX across the entire `medusa-eg` monorepo (`apps/storefront` and `apps/backend/src/admin`). You must eliminate all cheap-looking generic starter elements, abolish "AI-generated" visual clichés, strip developer jargon and technical clutter from customer and admin eyes, build a clean, bright, eye-grabbing, comfortable, and lively design system with buttery-smooth micro-animations, make the entire UI configurable via simple JSON theme files, and enforce a **100% Arabic-first experience** where not a single English letter appears anywhere unless explicitly toggled by the user.
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to inspect `seed-egypt-region.ts`, `checkout-view.tsx`, and `payload-builder.ts` before editing.
+</SUBAGENT_DELEGATION_DIRECTIVE>
 
----
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until live order placement succeeds end-to-end and discount calculation is exact.
+- /learn: Persist Medusa v2 fulfillment service zone and tax-exclusive discount rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
 
-## 🎨 PART 1: CORE DESIGN PHILOSOPHY & AESTHETIC DIRECTIVES
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION:
+   - View `apps/backend/src/scripts/seed-egypt-region.ts`.
+   - View `apps/storefront/src/modules/checkout/components/checkout-view.tsx`.
+   - View `apps/backend/src/modules/eta-tax/payload-builder.ts`.
 
-### 1. Abolish Cheap "AI Clichés" & Generic Defaults:
-- ❌ **NO cheap neon gradients, purple-on-dark glow, or generic crypto/AI dark theme gimmicks**.
-- ❌ **NO icon-stuffed bento boxes, pulsing biscuit pills with glowing dots, or raw border outlines**.
-- ❌ **NO developer jargon or unnecessary technical words**:
-  - Delete `(Paymob / Bosta)`, `(شامل 14% ضريبة)`, `(Powered by Medusa v2)`, `(Accept Paymob Gateway)`. Customers do NOT care what API courier or payment provider processes their order.
-  - Simplify CTAs: Replace clunky text with clean, decisive Arabic copy (e.g. `إتمام الطلب`, `أضف للسلة`, `تأكيد الشراء`, `متابعة`).
-- ✅ **Lively, Bright, Eye-Grabbing & Ultra-Comfortable Palette**:
-  - Warm luxury neutrals: Crisp porcelain white (`#FFFFFF`), warm cream/linen surfaces (`#FDFBF7`, `#F8F6F0`), subtle cashmere borders (`#EDE8E1`).
-  - Sophisticated Egyptian accent palette: Deep Nile Teal (`#0F4C5C`), Imperial Emerald (`#0A5C36`), Warm Terracotta / Sand Amber (`#C86D51`, `#D97706`), Velvet Slate for typography (`#1A202C`, `#2D3748`).
-  - Organic depth: Subtle layered elevations (`box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05)`), glassmorphism frosted blurs (`backdrop-blur-md bg-white/80`), tactile active states.
+2. IMPLEMENTATION:
+   - Update `seed-egypt-region.ts` using `createLocationFulfillmentSetWorkflow`, `createServiceZonesWorkflow`, and `createShippingOptionsWorkflow`.
+   - Update `checkout-view.tsx` to sequentialize shipping method addition -> payment collection -> payment session -> cart complete.
+   - Fix discount calculation in `payload-builder.ts` to compute against net subtotal before VAT.
 
-### 2. Micro-Animations & Fluid Responsiveness:
-- Implement tactile hover states, spring physics, smooth cart drawer slides, interactive image thumbnail cross-fades, and snappy optimistic quantity steppers.
-- Use CSS cubic-bezier transitions (`cubic-bezier(0.16, 1, 0.3, 1)`) for buttery smoothness with zero layout shift (CLS = 0).
+3. EMPIRICAL VERIFICATION:
+   - Run seed script: `cd apps/backend && npx medusa exec ./src/scripts/seed-egypt-region.ts`
+   - Run typecheck: `cd apps/backend && npx tsc --noEmit`
+   - Run storefront build: `cd apps/storefront && npm run build`
+   - Confirm order placement completes with HTTP 200 and live `order.id`.
 
-### 3. 100% Arabic-First Default (Zero English Leakage):
-- Every single screen, button, badge, header, placeholder, toast notification, error message, footer, invoice, and metadata tag must be **100% native Arabic by default**.
-- **Not a single English character or foreign abbreviation may appear anywhere** on any customer or employee screen (e.g., `EGP` -> `ج.م`, `SKU` -> `رمز المنتج`, `Tax` -> `الضريبة`, `Total` -> `الإجمالي`, `Discount` -> `الخصم`).
-- Arabic numerals or localized digits applied consistently.
-- English is strictly hidden until a user explicitly changes their language preference to English in their profile.
+4. PROCESS CLEANUP:
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
 
-### 4. Full UI Easy JSON Customizability (`theme.json` / `site-config.json`):
-- Extract all branding, colors, typography tokens, trust banners, announcement bars, navigation links, and category definitions into a centralized, editable JSON configuration file (e.g. `apps/storefront/src/config/theme.json` and `site-content.json`).
-- Store owners should be able to re-theme the entire platform (colors, banners, promotions, hero slogans) simply by editing this JSON without touching JSX code.
-
----
-
-## 🛠️ PART 2: COMPONENT-BY-COMPONENT IMPLEMENTATION BLUEPRINT
-
-### 1. Unified Theme Configuration (`apps/storefront/src/config/site-config.json`)
-Create a comprehensive JSON configuration file controlling all visual tokens and content:
-```json
-{
-  "theme": {
-    "colors": {
-      "primary": "#0F4C5C",
-      "primaryHover": "#0C3C49",
-      "accent": "#D97706",
-      "accentLight": "#FEF3C7",
-      "surface": "#FFFFFF",
-      "surfaceMuted": "#FDFBF7",
-      "border": "#EDE8E1",
-      "textPrimary": "#1A202C",
-      "textSecondary": "#718096"
-    },
-    "borderRadius": "16px",
-    "fontFamily": "var(--font-cairo)"
-  },
-  "announcement": {
-    "enabled": true,
-    "textAr": "✨ توصيل سريع لجميع محافظات مصر | دفع عند الاستلام أو بالتقسيط",
-    "textEn": "✨ Express delivery across Egypt | Cash on delivery or installments"
-  },
-  "trustBadges": [
-    { "id": "shipping", "titleAr": "شحن سريع لكافة المحافظات", "descAr": "توصيل خلال 24-48 ساعة لجميع مدن مصر" },
-    { "id": "payment", "titleAr": "دفع آمن ومتعدد الخيارات", "descAr": "بطاقات بنكية، محافظ إلكترونية، كاش، وتقسيط" },
-    { "id": "quality", "titleAr": "ضمان الجودة المصرية", "descAr": "منتجات أصلية 100% مع إمكانية الإرجاع السهل" }
-  ]
-}
+<ACCEPTANCE_CRITERIA>
+- [ ] Egypt service zone covers `countries: ["eg"]` and is linked to the Default Sales Channel.
+- [ ] `GET /store/shipping-options?cart_id=:id` returns Bosta shipping options.
+- [ ] Checkout initializes payment collection and payment session before `/complete`.
+- [ ] Order placement completes cleanly emitting a real `order.id`.
+- [ ] 10% discount on 51800 subtotal reports exactly 5180 piastres.
+- [ ] All subagents and background tasks cleanly terminated.
+</ACCEPTANCE_CRITERIA>
 ```
 
-### 2. Storefront Layout & Header (`apps/storefront/src/app/layout.tsx` & Header)
-- **Top Announcement Bar**: Subtle warm gold/linen banner with animated marquee or smooth fade for current promotions.
-- **Floating Glassmorphic Header**: Clean logo, live search with BiDi auto-detection, category navigation, language/currency indicator, and an interactive floating Cart pill with real-time badge count pulse.
-- **Typography**: Google Cairo loaded with optimal weight distribution (400, 500, 600, 700, 800) with `display: swap`.
+---
 
-### 3. Homepage & Catalog Showcase (`home-client-view.tsx`)
-- **Luxury Hero Banner**: Clean, high-impact typography with subtle parallax, smooth CTA buttons (`تسوق الآن`), and zero cluttered badges.
-- **Category Filter Rail**: Modern horizontal scrolling pills with tactile active indicators (`الكل`, `إلكترونيات`, `أزياء`, `منزل وديكور`, `عناية وجمال`, `عروض حصرية`).
-- **Product Card Masterpiece**:
-  - Image ratio 1:1 or 4:5 with smooth hover zoom.
-  - Clean localized pricing: `350 ج.م` with original strikethrough `450 ج.م` and subtle terracotta badge (`وفر 22%`).
-  - Floating Quick-Add button (`+`) that triggers optimistic cart drawer opening with haptic feedback.
-  - Zero developer text (delete all mentions of Bosta, Paymob, VAT percentages).
+# 🧠 PHASE 2: Ranked Multi-Armed Bandits (R-MAB) & NLP Semantic Search
 
-### 4. Slide-Over Cart Drawer (`cart-drawer.tsx`)
-- Buttery-smooth slide-in from right (in RTL) with backdrop blur.
-- Clean item rows with high-res thumbnails, variant badges (`مقاس: كبير`, `لون: أسود`), interactive quantity stepper (`-` `1` `+`), and instant trash icon removal.
-- Free shipping progress bar (e.g. `أضف 150 ج.م إضافية للحصول على شحن مجاني!`).
-- Clean Checkout Button: `إتمام الطلب • [الإجمالي] ج.م` (Full width, bold, high-contrast Nile Teal / Emerald).
+```markdown
+/goal
 
-### 5. Frictionless 1-Page Checkout (`checkout-view.tsx`)
-- **Visual Progress Stepper**: `1. بيانات التوصيل` -> `2. خيارات الدفع` -> `3. تأكيد الطلب`.
-- **Address & Governorate Selector**:
-  - Clean tiered Egyptian governorate selector displaying delivery cost transparently (e.g. `القاهرة والجيزة - 45 ج.م`, `الإسكندرية والدلتا - 60 ج.م`).
-  - Egyptian phone input with carrier auto-badge (Vodafone, Orange, Etisalat, WE).
-- **Payment Method Cards (Clean & Visual)**:
-  - `الدفع عند الاستلام (كاش)`
-  - `بطاقة بنكية (فيزا / ماستركارد / ميزة)`
-  - `المحافظ الإلكترونية (فودافون كاش، أورنج، اتصالات، وي)`
-  - `تقسيط ڤاليو (ValU) أو سهولة`
-  - `الدفع في منافذ أمان / فوري / مصاري`
-- **Total Summary Box**: Clear breakdown of `المجموع الفرعي`, `الشحن والتوصيل`, and `الإجمالي النهائي`.
+# TASK: Implement Ranked Multi-Armed Bandits (R-MAB) + NLP Morphological Search Engine
 
-### 6. Medusa Admin & Employee Portal (`apps/backend/src/admin/`)
-- Inject Egyptian Arabic localized dashboard labels, clean status pills (`مكتمل`, `قيد التجهيز`, `في الطريق`, `تم الإلغاء`), and rich order action drawers.
-- Streamline AI Copywriter widget into a sleek, one-click Egyptian marketing assistant (`توليد وصف جذاب بالعامية المصرية`).
+Replace the rigid `.includes()` search in `apps/storefront/src/modules/search/components/smart-search-bar.tsx` with an industry-grade **Two-Stage Intelligent Search Engine**:
+- **Stage 1 (High-Recall Candidate Retrieval)**:
+  - English & Arabic Stemming: `shirts` ↔ `shirt`, `t-shirt` ↔ `تيشيرت`, `watches` ↔ `ساعة`, `hoodies` ↔ `هودي`.
+  - Egyptian Dialect & Colloquial Synonyms: `كوتشي` / `شوز` ↔ `shoes`, `شيميز` / `فانلة` ↔ `shirt`, `برفان` / `عود` ↔ `perfume`.
+  - Damerau-Levenshtein Typo Distance $\le 2$: `shrt` -> `shirt`, `تيشرط` -> `تيشرت`.
+- **Stage 2 (Learning-to-Rank via Ranked Multi-Armed Bandits - R-MAB)**:
+  - Implement **Thompson Sampling with Beta Distribution** $\text{Beta}(\alpha_{\text{clicks}} + 1, \beta_{\text{impressions}} - \alpha_{\text{clicks}} + 1)$ to re-rank search results dynamically based on user click conversions and position discounting.
+  - Add instant click telemetry recording into local bandit state.
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to research Thompson Sampling Beta draw algorithms, Arabic morphological normalization, and Levenshtein distance matching.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until searching "shirts", "كوتشي", or "shrt" returns accurate, bandit-ranked products.
+- /learn: Persist Ranked Multi-Armed Bandits (R-MAB) and NLP search rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION:
+   - View `apps/storefront/src/modules/search/components/smart-search-bar.tsx` (lines 85–115).
+
+2. IMPLEMENTATION:
+   - **Create NLP Stemmer & Synonym Graph** (`apps/storefront/src/lib/search/nlp-stemmer.ts`):
+     Include bilingual synonym maps, Arabic normalizer (`[أإآء] -> ا`, `ة -> ه`), English suffix stemmer (`s`, `es`, `ing`), and Levenshtein typo matcher.
+   - **Create Ranked Bandit Engine** (`apps/storefront/src/lib/search/ranked-bandits.ts`):
+     Include Thompson Sampling Beta random draws, position discounting, and `recordBanditClick(productId, query, position)` telemetry.
+   - **Create Search API Route** (`apps/storefront/src/app/api/search/route.ts`):
+     Connect Stage 1 candidate retrieval + Stage 2 R-MAB scoring.
+   - **Update `SmartSearchBar` Component** (`smart-search-bar.tsx`):
+     Wire debounced 150ms search with `useTransition`, click tracking, "هل تقصد؟" typo pills, and zero-result fallback recommendations.
+
+3. EMPIRICAL VERIFICATION:
+   - Test `shirts` -> Returns `Egyptian Cotton T-Shirt` / `تيشرت قطن مصري`.
+   - Test `كوتشي` -> Returns footwear products.
+   - Test `shrt` (typo) -> Matches target shirt product.
+   - Run typecheck: `cd apps/storefront && npx tsc --noEmit`.
+   - Run build: `cd apps/storefront && npm run build`.
+
+4. PROCESS CLEANUP:
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Searching `shirts` returns all `shirt` / `t-shirt` products (stemming active).
+- [ ] Searching with typos (`shrt`, `تيشرط`) matches target items (fuzzy tolerance active).
+- [ ] Egyptian dialect terms (`كوتشي`, `شيميز`, `ساعة`) match respective products.
+- [ ] Ranked Multi-Armed Bandit (R-MAB) dynamically ranks items based on click conversions.
+- [ ] Storefront builds cleanly with exit code 0.
+- [ ] All subagents and background tasks cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
 
 ---
 
-## 📋 STEP-BY-STEP IMPLEMENTATION WORKFLOW
+# 🎨 PHASE 3: Luxury UI, 100% Arabic Default & Jargon Purge
 
-1. **Phase 1: Design Tokens & JSON Theme Foundation**:
-   - Create `apps/storefront/src/config/site-config.json` with all theme tokens and Arabic copy.
-   - Update `apps/storefront/src/app/globals.css` with luxury color variables, custom scrollbars, animations, and typography rules.
+```markdown
+/goal
 
-2. **Phase 2: Storefront Components Overhaul**:
-   - Redesign `Header`, `HeroBanner`, `ProductCard`, `CategoryPills`, and `Footer`.
-   - Ensure all strings are 100% Arabic with zero English text leakage.
-   - Strip all technical provider references (`Paymob`, `Bosta`, `Medusa`).
+# TASK: 100% Arabic-First Luxury E-Commerce Transformation & Developer Jargon Purge
 
-3. **Phase 3: Interactive Cart & Checkout Transformation**:
-   - Redesign `CartDrawer` with quantity steppers, delete animations, and free shipping tracker.
-   - Streamline `CheckoutView` into a modern, frictionless 1-page checkout with native Arabic payment cards and live Bosta tariff calculation.
+Execute a complete aesthetic and linguistic overhaul across both the storefront and admin panels:
+1. **Abolish Cheap AI Clichés**: Eliminate dark neon borders, generic purple glow, pulsing biscuit dots, and icon-stuffed bento boxes.
+2. **Luxury Color Palette**: Implement warm porcelain white (`#FFFFFF`), warm linen/cream surfaces (`#FDFBF7`, `#F8F6F0`), Deep Nile Teal (`#0F4C5C`), Imperial Emerald (`#0A5C36`), and Terracotta Amber (`#D97706`).
+3. **100% Arabic-First Default (Zero English Leakage)**:
+   - Ensure every button, label, dropdown, input placeholder, banner, order confirmation, and admin card is **100% authentic Arabic by default**.
+   - Not a single English letter appears anywhere (`EGP` -> `ج.م`, `SKU` -> `رمز المنتج`, `Total` -> `الإجمالي`, `Tax` -> `الضريبة`). English is strictly hidden unless explicitly toggled by the user.
+4. **Purge All Technical/Developer Jargon**:
+   - Strip all API/gateway/courier references from customer and employee views (`(Paymob / Bosta)`, `(شامل 14% ضريبة)`, `(Powered by Medusa)`). Replace with clean, decisive copy (`إتمام الطلب`, `أضف إلى السلة`, `تأكيد الشراء`).
+5. **JSON Configuration**: Extract all branding, colors, trust banners, announcement ribbons, and category definitions into `apps/storefront/src/config/site-config.json`.
 
-4. **Phase 4: Admin Extension & Widget Polish**:
-   - Restyle Admin AI Copywriter widget to match luxury aesthetics with clean Arabic copy.
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` to inspect `apps/storefront/src/app/globals.css`, `home-client-view.tsx`, `cart-context.tsx`, `checkout-view.tsx`, and admin widgets for English leaks and jargon.
+</SUBAGENT_DELEGATION_DIRECTIVE>
 
-5. **Phase 5: Build & Verification**:
-   - Verify `tsc --noEmit` on backend and storefront.
-   - Verify production build `npm run build` on both packages.
-   - Confirm complete visual beauty, 100% Arabic default, and zero console errors.
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until site is 100% Arabic by default, luxury styled, and free of developer jargon.
+- /learn: Persist luxury e-commerce styling and Arabic-first localization rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
 
----
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION:
+   - Search for English strings and jargon like "Paymob", "Bosta", "EGP", "SKU" across `apps/storefront` and `apps/backend/src/admin`.
 
-## 🎯 ACCEPTANCE CRITERIA
+2. IMPLEMENTATION:
+   - **Create `site-config.json`** (`apps/storefront/src/config/site-config.json`): Define complete color tokens, announcement text, and trust banners.
+   - **Update `globals.css`**: Define luxury CSS variables, smooth scrollbars, and Cairo/Inter font rules.
+   - **Overhaul Components**:
+     - `Header`: Glassmorphic floating navigation with live cart badge pulse and clean Arabic links.
+     - `HeroBanner`: High-impact luxury typography with clean CTA (`تسوق الآن`).
+     - `ProductCard`: Clean 1:1 image layout, dual pricing (`350 ج.م` vs `450 ج.م`), discount badge (`وفر 22%`), and floating quick-add button.
+     - `CheckoutView`: Clean 1-page checkout with native Arabic payment cards and zero developer jargon.
+     - `Admin Widgets`: Localized Egyptian Arabic labels and clean status badges.
 
-- [ ] Zero cheap "AI dark-mode" clichés, neon borders, or icon-stuffed boxes.
-- [ ] Bright, luxury, eye-grabbing color palette with Nile Teal / Emerald / Terracotta accents and warm linen backgrounds.
-- [ ] 100% Arabic-first experience across every screen, button, badge, and modal (zero English letters by default).
-- [ ] All developer jargon (`(using Paymob/Bosta)`, `(شامل 14% ضريبة)`) completely purged from customer and employee view.
-- [ ] All visual tokens, banners, and copy are easily customizable via `site-config.json`.
-- [ ] Micro-animations on buttons, cart drawer, and product cards with 0 layout shift.
+3. EMPIRICAL VERIFICATION:
+   - Open browser on `http://localhost:3000/eg` -> Verify zero English characters, luxury styling, and clean Arabic copy.
+   - Run typecheck: `cd apps/storefront && npx tsc --noEmit`.
+   - Run build: `cd apps/storefront && npm run build`.
+
+4. PROCESS CLEANUP:
+   - Terminate any running subagents, background dev servers, or processes before completing turn.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] 100% Arabic-first default across every screen, button, badge, and modal (zero English characters by default).
+- [ ] All developer jargon (`(using Paymob/Bosta)`, `(شامل 14% ضريبة)`) completely deleted.
+- [ ] Bright luxury palette with Nile Teal / Emerald / Terracotta accents and porcelain/linen surfaces.
+- [ ] All branding and visual tokens customizable via `site-config.json`.
 - [ ] Storefront and backend build cleanly with exit code 0.
+- [ ] All subagents and background tasks cleanly terminated.
+</ACCEPTANCE_CRITERIA>
+```
+
+---
+
+# 🎬 PHASE 4: Configurable Dynamic Animations Engine & Final Monorepo Build
+
+```markdown
+/goal
+
+# TASK: Granular Dynamic Animation Engine & Full Monorepo Build Verification
+
+Implement a rich, fully customizable motion system across the entire storefront:
+1. **Dynamic Motion Engine in `site-config.json`**:
+   - Allow merchants to configure animation presets (`"luxury-smooth"`, `"playful-spring"`, `"snappy-minimal"`, `"cinematic-fade"`) or customize individual component animations, durations (ms), and cubic-bezier easing curves directly in `site-config.json`:
+     - **Product Card Hover**: Lift scale (`scale(1.025)`), duration (`250ms`), and soft diffuse shadow.
+     - **Cart Drawer**: Spring slide-in from right (`350ms`), backdrop blur (`8px`).
+     - **Quantity Stepper**: Tactile micro-bounce on `+`/`-` (`scale: 1.35 -> 1.0`).
+     - **Item Removal**: Smooth exit swipe with height collapse (`opacity: 0, height: 0`).
+     - **Checkout Steps**: Smooth accordion/cross-fade transitions between delivery and payment.
+     - **Order Success**: Animated SVG checkmark draw with particle confetti burst.
+2. **Full Monorepo Build & Quality Verification**:
+   - Execute end-to-end verification across `@dtc/shared-types`, `apps/backend`, and `apps/storefront` to guarantee 100% zero-error compilation and zero layout shift (CLS = 0).
+
+<SUBAGENT_DELEGATION_DIRECTIVE>
+- Use `invoke_subagent` (Role: "Motion & Release Specialist", TypeName: "research") to verify animation CSS variables, component motion props, and full monorepo build tasks.
+</SUBAGENT_DELEGATION_DIRECTIVE>
+
+<ANTIGRAVITY_SLASH_COMMANDS>
+- /goal: Execute autonomously until animation engine is fully customizable via JSON and all packages build cleanly.
+- /learn: Persist dynamic CSS motion variables and Next.js micro-animation rules to .gemini/rules.
+</ANTIGRAVITY_SLASH_COMMANDS>
+
+<ANTIGRAVITY_WORKFLOW>
+1. RESEARCH & INSPECTION:
+   - View `apps/storefront/src/config/site-config.json` and `globals.css`.
+
+2. IMPLEMENTATION:
+   - Add `motion` configuration block to `site-config.json` with presets, easings, and component parameters.
+   - Expose CSS motion tokens in `globals.css` (`--motion-duration-card`, `--motion-ease-luxury`, etc.).
+   - Wire animations in `ProductCard`, `CartDrawer`, `CheckoutView`, and `Header` to read from motion tokens.
+   - Add interactive celebratory checkmark on order confirmation screen.
+
+3. EMPIRICAL VERIFICATION:
+   - Shared Types Build: `cd packages/shared-types && npm run build`
+   - Backend Typecheck & Build: `cd apps/backend && npx tsc --noEmit && npm run build`
+   - Storefront Typecheck & Build: `cd apps/storefront && npx tsc --noEmit && npm run build`
+   - Shell Script Syntax Check: `bash -n infrastructure/scripts/provision-tenant.sh`
+
+4. PROCESS CLEANUP:
+   - Terminate any active subagents, background worker loops, or dev server processes.
+</ANTIGRAVITY_WORKFLOW>
+
+<ACCEPTANCE_CRITERIA>
+- [ ] Every component animation (type, duration, easing, hover scale) is 100% configurable via `site-config.json`.
+- [ ] Product cards, cart drawer, quantity steppers, and checkout transitions animate smoothly with 0 layout shift (CLS = 0).
+- [ ] All workspaces (`@dtc/shared-types`, `apps/backend`, `apps/storefront`) pass typecheck and build with exit code 0.
+- [ ] System is 100% production ready.
+- [ ] All subagents and background tasks cleanly terminated.
+</ACCEPTANCE_CRITERIA>
 ```
